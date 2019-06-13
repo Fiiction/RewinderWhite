@@ -43,6 +43,9 @@ public class BackgroundSystem : MonoBehaviour
     Dictionary<Vector2Int, Color> BlockColor;
     List<BgrEffect> Effect, DeleteList;
     GameObject BlockObj;
+    static public Color COLORORANGE = new Color(0.522F, 0.690F, 0.592F), COLORPINK = new Color(1.000F, 0.235F, 0.235F),
+        COLORBLUE = new Color(0.176F, 0.365F, 0.376F),COLORGREEN = new Color(0.851F,0.976F,0.337F);
+
     Vector2[] EPS = { new Vector2(-0.33F, -0.33F), new Vector2(-0.33F, 0F), new Vector2(-0.33F, 0.33F),
                 new Vector2(0F, -0.33F), new Vector2(0F, 0F), new Vector2(0F, 0.33F),
                 new Vector2(0.33F, -0.33F), new Vector2(0.33F, 0F), new Vector2(0.33F, 0.33F)};
@@ -56,7 +59,7 @@ public class BackgroundSystem : MonoBehaviour
                 var obj = GameObject.Instantiate(BlockObj, (Vector3)BlockCenterPos(index), Quaternion.identity, transform);
                 BlockSprite.Add(index, obj.GetComponent<SpriteRenderer>());
                 BlockColor.Add(index, Color.white);
-                StartCoroutine( StartingDiamoundCoroutine(index));
+                //StartCoroutine( StartingDiamoundCoroutine(index));
             }
         }
 
@@ -70,8 +73,29 @@ public class BackgroundSystem : MonoBehaviour
         BlockColor = new Dictionary<Vector2Int, Color>();
         Effect = new List<BgrEffect>();
         Generate();
+        StartCoroutine(StartingWaveCoroutine());
     }
+    IEnumerator StartingWaveCoroutine()
+    {
+        yield return new WaitForSeconds(1F);
 
+        var be = new BgrEffect(BgrEffect.Type.Ring, COLORORANGE, 0.5F, 24F, 4F, new Vector2(-8F,6F));
+        AddEffect(be);
+
+        yield return new WaitForSeconds(1F);
+
+        be = new BgrEffect(BgrEffect.Type.Ring, COLORBLUE, 0.5F, 36F, 4F, new Vector2(8F, -6F));
+        AddEffect(be);
+
+        yield return new WaitForSeconds(0.5F);
+
+        be = new BgrEffect(BgrEffect.Type.Ring, COLORGREEN, 0.5F, 18F, 4F, new Vector2(-2F, -6F));
+        AddEffect(be);
+        yield return new WaitForSeconds(0.5F);
+
+        be = new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F,0.8F,0.8F), 0.5F, 24F, 4F, new Vector2(2F, 6F));
+        AddEffect(be);
+    }
     IEnumerator StartingDiamoundCoroutine(Vector2Int index)
     {
         Vector2 pos = BlockCenterPos(index);
@@ -85,7 +109,6 @@ public class BackgroundSystem : MonoBehaviour
         else
             str *= 1.2F;
 
-        Debug.Log(str);
         yield return new WaitForSeconds(waitTime* 0.2F);
         AddEffect(new BgrEffect(BgrEffect.Type.Single, color, str*0.2F, 0, life*0.5F, pos));
         yield return new WaitForSeconds(waitTime* 0.7F);
