@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     Queue<TouchState> touchQ = new Queue<TouchState>();
     Vector2 touchSum = Vector2.zero;
 
-    const float XMAX = 12F, YMAX = 9F;
+    const float XMAX = 11.68F, YMAX = 7.68F;
 
 
     IEnumerator RewindEffectCoroutine()

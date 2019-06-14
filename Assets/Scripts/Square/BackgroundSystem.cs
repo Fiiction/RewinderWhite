@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BgrEffect
 {
-    public enum Type { Single, Circle, Ring, OutSide};
+    public enum Type { Single, Circle, Ring, OutSide, InnerRing, OuterRing};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
@@ -36,7 +36,7 @@ public class BackgroundSystem : MonoBehaviour
 
     static bool InBoundary(Vector2Int i)
     {
-        return (i.x >= 8 && i.x <= 31 && i.y >= 1 && i.y <= 18);
+        return (i.x >= 8 && i.x <= 31 && i.y >= 2 && i.y <= 17);
     }
 
     Dictionary<Vector2Int, SpriteRenderer> BlockSprite;
@@ -77,24 +77,22 @@ public class BackgroundSystem : MonoBehaviour
     }
     IEnumerator StartingWaveCoroutine()
     {
-        yield return new WaitForSeconds(1F);
+        BgrEffect be;
+        for(int i =1;i<=18;i++)
+        {
+            Vector2 pos = new Vector2(Random.Range(-12F, 12F), Random.Range(-9F, 9F));
+            bool inner = Random.Range(0F, 1F) < 0.5F;
+            float str = 0.6F * (30F - i) / 30F;
+            if(inner)
+                be = new BgrEffect(BgrEffect.Type.InnerRing, new Color(0.8F, 0.8F, 0.8F), str, 24F, 4F, pos);
+            else
+                be = new BgrEffect(BgrEffect.Type.OuterRing, COLORORANGE, str, 24F, 4F, pos);
 
-        var be = new BgrEffect(BgrEffect.Type.Ring, COLORORANGE, 0.5F, 24F, 4F, new Vector2(-8F,6F));
-        AddEffect(be);
+            AddEffect(be);
+            yield return new WaitForSeconds(0.2F);
 
-        yield return new WaitForSeconds(1F);
+        }
 
-        be = new BgrEffect(BgrEffect.Type.Ring, COLORBLUE, 0.5F, 36F, 4F, new Vector2(8F, -6F));
-        AddEffect(be);
-
-        yield return new WaitForSeconds(0.5F);
-
-        be = new BgrEffect(BgrEffect.Type.Ring, COLORGREEN, 0.5F, 18F, 4F, new Vector2(-2F, -6F));
-        AddEffect(be);
-        yield return new WaitForSeconds(0.5F);
-
-        be = new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F,0.8F,0.8F), 0.5F, 24F, 4F, new Vector2(2F, 6F));
-        AddEffect(be);
     }
     IEnumerator StartingDiamoundCoroutine(Vector2Int index)
     {
@@ -161,20 +159,27 @@ public class BackgroundSystem : MonoBehaviour
                         }
                     break;
                 case BgrEffect.Type.Ring:
+                case BgrEffect.Type.InnerRing:
+                case BgrEffect.Type.OuterRing:
                     str = i.strength * (1F - i.phase) * (1F - i.phase);
                     rad = i.radius * Mathf.Pow(i.phase,1.3F);
+                    float halfWidth = rad * 0.4F + 1F;
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad*1.6F + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad * 1.6F + 1) + 20F); x++)
                         for (int y = Mathf.FloorToInt(i.pos.y - (rad * 1.6F + 1) + 10F); y <= Mathf.FloorToInt(i.pos.y + (rad * 1.6F + 1) + 10F); y++)
                         {
                             index = new Vector2Int(x, y);
+                            if (i.type == BgrEffect.Type.InnerRing && !InBoundary(index))
+                                continue;
+                            if (i.type == BgrEffect.Type.OuterRing && InBoundary(index))
+                                continue;
                             strRate = 0F;
                             foreach (var v in EPS)
                             {
-                                dist = (i.pos - BlockCenterPos(index) - v).magnitude / rad;
-                                if (dist < 1.6F && dist >= 1F)
-                                    strRate += (1.6F - dist) / 0.6F;
-                                if (dist < 1F && dist > 0.4F)
-                                    strRate += (dist - 0.4F) / 0.6F;
+                                dist = (i.pos - BlockCenterPos(index) - v).magnitude;
+                                if (dist < rad + halfWidth && dist >= rad)
+                                    strRate += (rad + halfWidth - dist) / halfWidth;
+                                if (dist < rad && dist > rad - halfWidth)
+                                    strRate += (dist - rad + halfWidth) / halfWidth;
                             }
                             strRate /= EPS.Length;
                             SingleEffect(index, i.color, str * strRate);
