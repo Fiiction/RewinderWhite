@@ -27,25 +27,36 @@ public class Player : MonoBehaviour
 {
     public float speed;
     public float rewindTime;
+    public bool alive = true;
     float lastRewindTime;
 
     public Vector3 rewindPos;
     //public GameObject RewindMark;
     GameObject dropGraphics;
-    GameObject CurrentGraphic;
+    GameObject CurrentDrop;
     Queue<State> stateQ = new Queue<State>();
     Queue<TouchState> touchQ = new Queue<TouchState>();
     Vector2 touchSum = Vector2.zero;
 
     const float XMAX = 11.68F, YMAX = 7.68F;
 
-
+    public void Kill()
+    {
+        if (!alive)
+            return;
+        alive = false;
+        CurrentDrop.GetComponent<DropGraphics>().Fade();
+    }
     IEnumerator RewindEffectCoroutine()
     {
         Vector2 rPos = transform.position;
         State[] wavePos = stateQ.ToArray();
         float hue = Random.Range(0F,1F);
         int f = (wavePos.Length - 1) / 6;
+        if (f <= 0)
+        {
+            yield break;
+        }
         int cnt = 0;
         float r,str;
         for(int i = wavePos.Length-1;i>=0;i--)
@@ -55,32 +66,32 @@ public class Player : MonoBehaviour
                 cnt++;
                 r = Mathf.Abs(cnt - 4) * 3F + 3F;
                 str = 0.24F - 0.01F * r;
-                Debug.Log(cnt);
                 hue += 0.12F;
                 if (hue >= 1F)
                     hue -= 1F;
-                //var be = new BgrEffect(BgrEffect.Type.Circle, Color.HSVToRGB(hue,1.0F,1.0F), 0.06F, 2.4F, 0.5F, wavePos[i].pos);
                 var be = new BgrEffect(BgrEffect.Type.Ring, Color.HSVToRGB(hue, 0.0F, 0.0F), 0.12F, r, 2F,
                     (Vector2)wavePos[i].pos + (Vector2)transform.position - rPos);
                 FindObjectOfType<BackgroundSystem>().AddEffect(be);
-                yield return 0; yield return 0; yield return 0; yield return 0;
+                yield return new WaitForSeconds(0.06F);
             }
         }
     }
 
     public void Rewind()
     {
+        if (!alive)
+            return;
         if (Time.time < lastRewindTime + rewindTime)
             return;
 
-        CurrentGraphic.GetComponent<DropGraphics>().Fade();
+        CurrentDrop.GetComponent<DropGraphics>().Fade();
         transform.position = rewindPos;
         StartCoroutine(RewindEffectCoroutine());
         stateQ.Clear();
         lastRewindTime = Time.time;
-        CurrentGraphic = GameObject.Instantiate(dropGraphics, transform);
-        CurrentGraphic.transform.SetParent(transform);
-        CurrentGraphic.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
+        CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
+        CurrentDrop.transform.SetParent(transform);
+        CurrentDrop.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
     }
     float lastTouchBoundaryTime = -1F;
     void TouchBoundary()
@@ -89,14 +100,13 @@ public class Player : MonoBehaviour
             return;
         lastTouchBoundaryTime = Time.time;
         var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.5F, 12F, 1.2F, (Vector2)(transform.position * 0.78F));
-        Debug.Log("Be");
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
     void Move()
     {
-        Vector2 deltaPos;
-
-        deltaPos = Vector2.zero;
+        if (!alive)
+            return;
+        Vector2 deltaPos = Vector2.zero;
 
         if (Input.GetKey(KeyCode.UpArrow))
             deltaPos += Vector2.up * 20;
@@ -118,7 +128,6 @@ public class Player : MonoBehaviour
         }
 
         deltaPos = Vector2.ClampMagnitude(touchSum, speed);
-
 
         if (Input.GetKey(KeyCode.Space))
             Rewind();
@@ -153,8 +162,8 @@ public class Player : MonoBehaviour
         lastRewindTime  = 0F;
         //GameObject.Instantiate(RewindMark, transform.position, Quaternion.identity);
         dropGraphics = Resources.Load<GameObject>("Prefabs/DropGraphics");
-        CurrentGraphic = GameObject.Instantiate(dropGraphics, transform);
-        CurrentGraphic.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
+        CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
+        CurrentDrop.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
     }
 
     // Update is called once per frame

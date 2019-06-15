@@ -6,10 +6,11 @@ public class Orange : MonoBehaviour {
     
     public float speed,angSpeed;
     float curAngle;
+    EnemyController EC;
 
     float TargetAngle()
     {
-        Vector2 deltaPos = (Vector2)(GameSystem.playerPos - transform.position);
+        Vector2 deltaPos = (Vector2)(EC.player.transform.position - transform.position);
         float ret = Mathf.Atan2(deltaPos.y, deltaPos.x);
         return ret;
 
@@ -19,18 +20,15 @@ public class Orange : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        GameSystem.orangeCnt++;
-        
+        EC = GetComponent<EnemyController>();
+        Generator.orangeCnt++;
         curAngle = TargetAngle();
-
-
-	}
+    }
 
     float tar;
     void Move()
     {
-        //float tar = TargetAngle(), pi = Mathf.PI;
-        if (GameSystem.alive)
+        if (EC.player.alive)
             tar = TargetAngle();
         if (curAngle > tar + Mathf.PI)
             curAngle += angSpeed * Time.deltaTime;
@@ -45,11 +43,8 @@ public class Orange : MonoBehaviour {
             curAngle -= 2F * Mathf.PI;
         if (curAngle < -Mathf.PI)
             curAngle += 2F * Mathf.PI;
-        transform.position += (Vector3)new Vector2(Mathf.Cos(curAngle), Mathf.Sin(curAngle))
-            * speed * Time.deltaTime;
-
-
-
+        EC.vel = new Vector2(Mathf.Cos(curAngle), Mathf.Sin(curAngle)) * speed;
+        transform.position += (Vector3)EC.vel * Time.deltaTime;
     }
 
     // Update is called once per frame
@@ -58,16 +53,9 @@ public class Orange : MonoBehaviour {
         Move();
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "Red" 
-            || collision.gameObject.tag == "Orange"
-            ||collision.gameObject.tag == "Player")
-            collision.gameObject.GetComponent<KillControler>().Kill();
-    }
 
     private void OnDestroy()
     {
-
+        Generator.orangeCnt--;
     }
 }
