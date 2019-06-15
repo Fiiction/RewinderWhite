@@ -34,7 +34,7 @@ public class DropGraphics : MonoBehaviour
         line = transform.Find("Line").GetComponent<TrailRenderer>();
         sr = GetComponent<SpriteRenderer>();
         tail.time = 0.15F * tailLength;
-        line.time = 1.6F * lineLength;
+        line.time = 1.8F * lineLength;
         line.widthMultiplier = 0.02F * lineWidth;
     }
 

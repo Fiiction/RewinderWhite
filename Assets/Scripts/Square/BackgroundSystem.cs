@@ -12,6 +12,10 @@ public class BgrEffect
 
     public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p)
     {
+        float hh, ss, vv;
+        Color.RGBToHSV(c,out hh,out ss,out vv);
+        ss = 1F - (1F - ss) * (1F - ss);
+        c = Color.HSVToRGB(hh, ss, vv);
         type = t; color = c;
         strength = s; radius = r;
         life = l; startTime = Time.time;
