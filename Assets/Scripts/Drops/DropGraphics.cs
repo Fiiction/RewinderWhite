@@ -72,7 +72,6 @@ public class DropGraphics : MonoBehaviour
         tail.material.SetFloat("_Rad", r);
         tail.material.SetFloat("_CenPosX", v.x);
         tail.material.SetFloat("_CenPosY", Screen.height - v.y);
-        Debug.Log(r.ToString() + " " + v.x.ToString() + " " + v.y.ToString());
 
     }
     // Update is called once per frame

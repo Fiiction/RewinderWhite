@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
     public int strength;
+    public float scoreRate;
     public Player player;
     public Vector2 vel = Vector2.zero;
     GameObject CurrentDrop;
@@ -30,7 +31,7 @@ public class EnemyController : MonoBehaviour
         var be = new BgrEffect(BgrEffect.Type.Ring, color, waveS, waveR, waveL,
             (Vector2)transform.position);
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
-
+        FindObjectOfType<GameSystem>().AddScore(scoreRate);
         Destroy(gameObject);
     }
 
@@ -58,7 +59,7 @@ public class EnemyController : MonoBehaviour
             float angle = Random.Range(0F, 2F * Mathf.PI);
             Vector2 deltaPos = Random.Range(0.3F, 1F) * dripRad * new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             var be = new BgrEffect(BgrEffect.Type.Single, color, Random.Range(0.3F,0.7F), 0F, 1F,
-                (Vector2)transform.position + deltaPos);
+                (Vector2)transform.position + vel * 0.3F + deltaPos);
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
@@ -66,7 +67,10 @@ public class EnemyController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
+        {
+            FindObjectOfType<GameSystem>().killColor = color;
             collision.gameObject.GetComponent<Player>().Kill();
+        }
         if (collision.gameObject.tag == "Enemy")
         {
             var c = collision.gameObject.GetComponent<EnemyController>();
@@ -79,6 +83,6 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //DripColor();
+        DripColor();
     }
 }

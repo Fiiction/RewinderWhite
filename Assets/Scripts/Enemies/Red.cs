@@ -32,6 +32,8 @@ public class Red : MonoBehaviour {
 
     void Rebound()
     {
+        if (!EC.player)
+            return;
         vel = speed*(EC.player.transform.position - transform.position).normalized;
         EC.vel = vel;
         if(inScreen)

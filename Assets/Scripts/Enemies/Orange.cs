@@ -28,7 +28,7 @@ public class Orange : MonoBehaviour {
     float tar;
     void Move()
     {
-        if (EC.player.alive)
+        if (EC.player)
             tar = TargetAngle();
         if (curAngle > tar + Mathf.PI)
             curAngle += angSpeed * Time.deltaTime;

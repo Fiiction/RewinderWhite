@@ -46,6 +46,8 @@ public class Player : MonoBehaviour
             return;
         alive = false;
         CurrentDrop.GetComponent<DropGraphics>().Fade();
+        FindObjectOfType<GameSystem>().SetState(GameSystem.State.Ending);
+        Destroy(gameObject);
     }
     IEnumerator RewindEffectCoroutine()
     {
@@ -76,7 +78,11 @@ public class Player : MonoBehaviour
             }
         }
     }
-
+    void ResetDrop()
+    {
+        CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
+        CurrentDrop.GetComponent<DropGraphics>().basicColor = StandardColors.COLORPLAYER;
+    }
     public void Rewind()
     {
         if (!alive)
@@ -89,9 +95,7 @@ public class Player : MonoBehaviour
         StartCoroutine(RewindEffectCoroutine());
         stateQ.Clear();
         lastRewindTime = Time.time;
-        CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
-        CurrentDrop.transform.SetParent(transform);
-        CurrentDrop.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
+        ResetDrop();
     }
     float lastTouchBoundaryTime = -1F;
     void TouchBoundary()
@@ -162,8 +166,7 @@ public class Player : MonoBehaviour
         lastRewindTime  = 0F;
         //GameObject.Instantiate(RewindMark, transform.position, Quaternion.identity);
         dropGraphics = Resources.Load<GameObject>("Prefabs/DropGraphics");
-        CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
-        CurrentDrop.GetComponent<DropGraphics>().basicColor = new Color(0.2F, 0.2F, 0.2F);
+        ResetDrop();
     }
 
     // Update is called once per frame

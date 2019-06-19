@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class BgrEffect
 {
@@ -9,53 +10,99 @@ public class BgrEffect
     public Color color;
     public float strength, radius, life,startTime,phase;
     public Vector2 pos;
-
     public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p)
     {
-        float hh, ss, vv;
-        Color.RGBToHSV(c,out hh,out ss,out vv);
-        ss = 1F - (1F - ss) * (1F - ss);
-        c = Color.HSVToRGB(hh, ss, vv);
+        c = StandardColors.Adjust(c);
         type = t; color = c;
         strength = s; radius = r;
         life = l; startTime = Time.time;
         pos = p;
         phase = 0;
     }
+}
 
+public class MeteorEffect
+{
+    float r;
+    Vector2 pos,vec;
+    HashSet<Vector2Int> Effected;
+
+    public MeteorEffect()
+    {
+        r = Random.Range(0F, 8F);
+        float theta = Random.Range(0F, 2F) * Mathf.PI;
+        vec = new Vector2(Mathf.Cos(theta)*1.6F, Mathf.Sin(theta));
+        pos = vec * r;
+        Effected = new HashSet<Vector2Int>();
+    }
+    public bool Update(BackgroundSystem BS)
+    {
+        r += Time.deltaTime * 5F;
+        pos = vec * r;
+        Vector2Int index = BackgroundSystem.BlockIndex(pos);
+        if (!BackgroundSystem.InScreen(index))
+            return false;
+        if(!Effected.Contains(index))
+        {
+            Vector2 p = BackgroundSystem.BlockCenterPos(index);
+            float dist = Mathf.Abs(p.x - pos.x) + Mathf.Abs(p.y - pos.y);
+            if (dist > 0.5F)
+                return true;
+            Effected.Add(index);
+            Color c = BackgroundSystem.InBoundary(index) ? Color.black : StandardColors.COLORORANGE;
+            float s = r * 0.03F*Random.Range(0.6F,1.4F);
+            BgrEffect be = new BgrEffect(BgrEffect.Type.Single, c, s, 0F, 1F, p);
+            BS.AddEffect(be);
+        }
+        return true;
+
+    }
 }
 
 
 public class BackgroundSystem : MonoBehaviour
 {
-    static Vector2 BlockCenterPos(Vector2Int i)
+    static public Vector2 BlockCenterPos(Vector2Int i)
     {
         return new Vector2(i.x - 19.5F, i.y - 9.5F);
     }
-    static Vector2Int BlockIndex(Vector2 p)
+    static public Vector2Int BlockIndex(Vector2 p)
     {
         int x = Mathf.FloorToInt(p.x + 20F), y = Mathf.FloorToInt(p.y + 10F);
         return new Vector2Int(x, y);
     }
-    static bool InBoundary(Vector2Int i)
+    static public bool InBoundary(Vector2Int i)
     {
         return (i.x >= 8 && i.x <= 31 && i.y >= 2 && i.y <= 17);
+    }
+    static public bool InScreen(Vector2Int i)
+    {
+        return (i.x >= 0 && i.x <= 39 && i.y >= 0 && i.y <= 19);
     }
     static Vector2[] EPS = { new Vector2(-0.33F, -0.33F), new Vector2(-0.33F, 0F), new Vector2(-0.33F, 0.33F),
                 new Vector2(0F, -0.33F), new Vector2(0F, 0F), new Vector2(0F, 0.33F),
                 new Vector2(0.33F, -0.33F), new Vector2(0.33F, 0F), new Vector2(0.33F, 0.33F)};
-    static public Color COLORORANGE = new Color(0.522F, 0.690F, 0.592F), COLORRED = new Color(1.000F, 0.235F, 0.235F),
-        COLORBLUE = new Color(0.176F, 0.365F, 0.376F), COLORGREEN = new Color(0.851F, 0.976F, 0.337F);
 
     Dictionary<Vector2Int, SpriteRenderer> BlockSprite;
     Dictionary<Vector2Int, Color> BlockColor;
     List<BgrEffect> Effect, DeleteList;
+    List<MeteorEffect> MeteorEffects;
     GameObject BlockObj;
+    GameSystem GS;
+    public Color bgrColor = Color.white;
+
+    public IEnumerator SetBgrColorCoroutine(Color c)
+    {
+        Debug.Log(c);
+        yield return new WaitForSeconds(1F);
+        DOTween.To(() => bgrColor, x => bgrColor = x, c, 1F);
+        yield return new WaitForSeconds(1F);
+
+    }
 
     void Generate()
     {
         for (int i = 0; i < 40; i++)
-        {
             for (int j = 0; j < 20; j++)
             {
                 Vector2Int index = new Vector2Int(i, j);
@@ -63,19 +110,19 @@ public class BackgroundSystem : MonoBehaviour
                 BlockSprite.Add(index, obj.GetComponent<SpriteRenderer>());
                 BlockColor.Add(index, Color.white);
             }
-        }
-
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
         BlockObj = Resources.Load<GameObject>("Prefabs/BackgroundBlock");
         BlockSprite = new Dictionary<Vector2Int, SpriteRenderer>();
         BlockColor = new Dictionary<Vector2Int, Color>();
         Effect = new List<BgrEffect>();
+        MeteorEffects = new List<MeteorEffect>();
         Generate();
-        //StartCoroutine(StartingWaveCoroutine());
+        AddEffect(new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 42F, 4F, Vector2.zero));
     }
     IEnumerator StartingWaveCoroutine()
     {
@@ -88,7 +135,7 @@ public class BackgroundSystem : MonoBehaviour
             if (inner)
                 be = new BgrEffect(BgrEffect.Type.InnerRing, new Color(0.8F, 0.8F, 0.8F), str, 24F, 3F, pos);
             else
-                be = new BgrEffect(BgrEffect.Type.OuterRing, COLORORANGE, str, 24F, 3F, pos);
+                be = new BgrEffect(BgrEffect.Type.OuterRing, StandardColors.COLORORANGE, str, 24F, 3F, pos);
 
             AddEffect(be);
             yield return new WaitForSeconds(0.2F);
@@ -102,7 +149,7 @@ public class BackgroundSystem : MonoBehaviour
         //float str = Mathf.PerlinNoise(12F * pos.x, 0.1F * pos.y);
         float str = (Mathf.Cos(12F * pos.x + 0.5F * pos.y) + 1) * 0.5F;
         float waitTime = 0.06F * Mathf.Abs(pos.y) + 0.12F * Mathf.Abs(pos.x) + Random.Range(0F, 0.4F);
-        Color color = InBoundary(index) ? Color.black : new Color(0.522F, 0.690F, 0.592F);
+        Color color = InBoundary(index) ? Color.black : StandardColors.Adjust(StandardColors.COLORORANGE);
         float life = Random.Range(0.7F, 1.1F);
         if (InBoundary(index))
             str *= 0.6F;
@@ -125,11 +172,25 @@ public class BackgroundSystem : MonoBehaviour
     void CalcColor()
     {
         Vector2Int index;
+        float h, s, v;
         for (int i = 0; i < 40; i++)
             for (int j = 0; j < 20; j++)
             {
                 index = new Vector2Int(i, j);
-                BlockColor[index] = Color.white;
+                BlockColor[index] = bgrColor;
+                /*
+                Color.RGBToHSV(StandardColors.COLORORANGE, out h, out s, out v);
+                s = Random.Range(s*0.2F, s);
+                v = Random.Range(v, v+0.1F);
+                if (InBoundary(index))
+                {
+                    s = 0F;
+                    v = 1F;
+                }
+                BlockColor[index] = Color.HSVToRGB(h,s,v);
+                if (Random.Range(0F, 1F) < 0.9F)
+                    BlockColor[index] = Color.white;
+                    */
             }
         DeleteList = new List<BgrEffect>();
         foreach (var i in Effect)
@@ -175,9 +236,9 @@ public class BackgroundSystem : MonoBehaviour
                             if (i.type == BgrEffect.Type.OuterRing && InBoundary(index))
                                 continue;
                             strRate = 0F;
-                            foreach (var v in EPS)
+                            foreach (var vec in EPS)
                             {
-                                dist = (i.pos - BlockCenterPos(index) - v).magnitude;
+                                dist = (i.pos - BlockCenterPos(index) - vec).magnitude;
                                 if (dist < rad + halfWidth && dist >= rad)
                                     strRate += (rad + halfWidth - dist) / halfWidth;
                                 if (dist < rad && dist > rad - halfWidth)
@@ -221,5 +282,40 @@ public class BackgroundSystem : MonoBehaviour
     void Update()
     {
         CalcColor();
+        Camera.main.backgroundColor = bgrColor;
+        /*
+        for (int i = 1; i <= 160; i++)
+            if (Random.Range(0F, 1F) < Time.deltaTime)
+            {
+                float r = Random.Range(7F, 26F);
+                float theta = Random.Range(0F, 2F) * Mathf.PI;
+                Vector2 pos = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta)) * r;
+                BgrEffect be;
+                if (InBoundary(BlockIndex(pos)))
+                {
+                    if (Random.Range(0F, 1F) < 0.7F)
+                        continue;
+                    be = new BgrEffect(BgrEffect.Type.Single, Color.black, r*0.03F, 0F, 1F, pos);
+                }
+                else
+                    be = new BgrEffect(BgrEffect.Type.Single, StandardColors.COLORORANGE, r * 0.03F, 0F, 1F, pos);
+                AddEffect(be);
+
+            }
+            */
+            /*
+        if (Random.Range(0F, 1F) < Time.deltaTime * 30F)
+            MeteorEffects.Add(new MeteorEffect());
+        foreach(var i in MeteorEffects)
+        {
+            i.Update(this);
+        }
+        */
+        if(Input.GetMouseButtonDown(0))
+        {
+            Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            AddEffect( new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 24F, 2F, pos));
+
+        }
     }
 }

@@ -84,13 +84,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   strength: 1
+  scoreRate: 1
   player: {fileID: 0}
   vel: {x: 0, y: 0}
   color: {r: 0.52156866, g: 0.6901961, b: 0.5921569, a: 1}
   tailLength: 1
   lineWidth: 1
   lineLength: 1
-  dripFreq: 0.602
+  dripFreq: 0
   dripRad: 1.15
   waveS: 0.2
   waveL: 1.4
@@ -107,5 +108,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94bc5e8e426a93a4b88f277efc1a1281, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  angSpeed: 2
+  speed: 5
+  angSpeed: 1.6

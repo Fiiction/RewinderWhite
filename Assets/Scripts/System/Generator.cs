@@ -5,20 +5,18 @@ using UnityEngine;
 public class Generator : MonoBehaviour
 {
 
-    public static int orangeCnt, redCnt, blueCnt;
+    public static int orangeCnt, redCnt;
     public static string text;
     public GameObject Orange, Red, Blue, Inflater, Green, debugText, scoreText;
     float nextBlue, nextInflater;
-    public static float score;
-    float startTime,gameTime;
-
+    float startTime;
+    GameSystem GS;
 
     void GenerateOrange()
     {
         float angle = Random.Range(1F,5F)/6F*Mathf.PI;
         Vector3 pos1 = new Vector3(28 * Mathf.Cos(angle), 17 * Mathf.Sin(angle)),
             pos2 = new Vector3(28 * Mathf.Cos(angle), -17 * Mathf.Sin(angle));
-        Debug.Log("Pos1: " + pos1.ToString() + "\nPos2: " + pos2.ToString());
         GameObject.Instantiate(Orange, pos1, Quaternion.identity);
         if ((orangeCnt + redCnt) % 2 == 1)
             return;
@@ -39,52 +37,49 @@ public class Generator : MonoBehaviour
         GameObject.Instantiate(Red, pos2, Quaternion.identity);
     }
 
+    int blueCnt = 0;
+    Vector3[] bluePos = { Vector3.left * 24F, Vector3.up * 16F, Vector3.right * 24F, Vector3.down * 16F };
     void GenerateBlue()
     {
-        float angle1 = Random.Range(0, 2 * Mathf.PI);
-        //GameObject.Instantiate(Blue, new Vector3(7,7), Quaternion.identity);
-        GameObject.Instantiate(Blue, new Vector3(13 * Mathf.Cos(angle1), 9 * Mathf.Sin(angle1)), Quaternion.identity);
-        blueCnt++;
-
+        GameObject.Instantiate(Blue, bluePos[blueCnt % 4], Quaternion.identity);
         //Calc the time of next generation
-        if (gameTime <= 60)
-            nextBlue = gameTime + Random.Range(20F, 30F);
-        else nextBlue = gameTime + Random.Range(12F, 24F);
+        if (GS.gameTime <= 60)
+            nextBlue = GS.gameTime + Random.Range(24F, 30F);
+        else nextBlue = GS.gameTime + Random.Range(18F, 24F);
+        blueCnt++;
     }
 
     int BasicMinCnt()
     {
-        if (gameTime <= 15) return 4;
-        if (gameTime <= 30) return 6;
-        if (gameTime <= 50) return 8;
-        if (gameTime <= 75) return 10;
-        if (gameTime <= 105) return 12;
+        if (GS.gameTime <= 15) return 4;
+        if (GS.gameTime <= 30) return 6;
+        if (GS.gameTime <= 50) return 8;
+        if (GS.gameTime <= 75) return 10;
+        if (GS.gameTime <= 105) return 12;
         return 14;
 
     }
     float RedRate()
     {
-        if (gameTime <= 20) return 0;
+        if (GS.gameTime <= 20) return 0;
         else return 0.16F;
     }
 
-    void GenerateBasics()
-    {
-    }
-
+    float nextGenerateTime = 0F;
     void Generate()
     {
-        if (orangeCnt + redCnt < BasicMinCnt())
+        if (orangeCnt + redCnt < BasicMinCnt() && Time.time >= nextGenerateTime)
         {
             if (Random.Range(0F, 1F) <= RedRate())
                 GenerateRed();
             else
                 GenerateOrange();
+            nextGenerateTime = Time.time + 2F * 60F/ (60F+GS.gameTime);
         }
-        /*
-        if (gameTime >= nextBlue)
+        
+        if (GS.gameTime >= nextBlue)
             GenerateBlue();
-            */
+            
     }
 
     void StartingGenerate()
@@ -94,16 +89,17 @@ public class Generator : MonoBehaviour
         GameObject.Instantiate(Orange, pos2, Quaternion.identity);
         GameObject.Instantiate(Orange, -pos1, Quaternion.identity);
         GameObject.Instantiate(Orange, -pos2, Quaternion.identity);
-
     }
 
     // Use this for initialization
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
+
         Orange = Resources.Load<GameObject>("Prefabs/Enemies/Orange");
         Red = Resources.Load<GameObject>("Prefabs/Enemies/Red");
+        Blue = Resources.Load<GameObject>("Prefabs/Enemies/Blue");
 
-        score = 0F;
         nextBlue = 35F;
         startTime = Time.time;
         orangeCnt = redCnt = blueCnt = 0;
@@ -114,8 +110,8 @@ public class Generator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        gameTime = Time.time - startTime;
-        //debugText.GetComponent<Text>().text = text;
+        if (!GS.Gaming())
+            Destroy(gameObject);
         Generate();
     }
 }
