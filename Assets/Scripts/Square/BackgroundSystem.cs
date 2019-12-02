@@ -93,7 +93,6 @@ public class BackgroundSystem : MonoBehaviour
 
     public IEnumerator SetBgrColorCoroutine(Color c)
     {
-        Debug.Log(c);
         yield return new WaitForSeconds(1F);
         DOTween.To(() => bgrColor, x => bgrColor = x, c, 1F);
         yield return new WaitForSeconds(1F);

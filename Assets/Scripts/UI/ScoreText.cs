@@ -21,6 +21,7 @@ public class ScoreText : MonoBehaviour
         c = text.color;
         c.a = alpha;
         text.color = c;
+        text.raycastTarget = false;
     }
 
     // Update is called once per frame
@@ -44,6 +45,7 @@ public class ScoreText : MonoBehaviour
             if (alpha > 0F)
             {
                 alpha -= Time.deltaTime / GS.stateChangeTime;
+                c.a = alpha;
                 text.color = c;
             }
         }

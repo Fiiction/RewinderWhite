@@ -33,9 +33,11 @@ public class DropGraphics : MonoBehaviour
         tail = transform.Find("Tail").GetComponent<TrailRenderer>();
         line = transform.Find("Line").GetComponent<TrailRenderer>();
         sr = GetComponent<SpriteRenderer>();
-        tail.time = 0.15F * tailLength;
-        line.time = 1.8F * lineLength;
-        line.widthMultiplier = 0.02F * lineWidth;
+        float scale = transform.lossyScale.x;
+        tail.time = 0.18F * tailLength * scale;
+        tail.widthMultiplier = 0.6F * scale;
+        line.time = 2.0F * lineLength;
+        line.widthMultiplier = 0.024F * lineWidth * scale;
     }
 
     Gradient SetGradient(Color color)

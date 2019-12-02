@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     Queue<State> stateQ = new Queue<State>();
     Queue<TouchState> touchQ = new Queue<TouchState>();
     Vector2 touchSum = Vector2.zero;
-
+    JoyStickController JSC;
     const float XMAX = 11.68F, YMAX = 7.68F;
 
     public void Kill()
@@ -83,12 +83,12 @@ public class Player : MonoBehaviour
         CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
         CurrentDrop.GetComponent<DropGraphics>().basicColor = StandardColors.COLORPLAYER;
     }
-    public void Rewind()
+    public bool Rewind()
     {
         if (!alive)
-            return;
+            return false;
         if (Time.time < lastRewindTime + rewindTime)
-            return;
+            return false;
 
         CurrentDrop.GetComponent<DropGraphics>().Fade();
         transform.position = rewindPos;
@@ -96,6 +96,7 @@ public class Player : MonoBehaviour
         stateQ.Clear();
         lastRewindTime = Time.time;
         ResetDrop();
+        return true;
     }
     float lastTouchBoundaryTime = -1F;
     void TouchBoundary()
@@ -111,7 +112,8 @@ public class Player : MonoBehaviour
         if (!alive)
             return;
         Vector2 deltaPos = Vector2.zero;
-
+        if (JSC)
+            deltaPos = JSC.axis;
         if (Input.GetKey(KeyCode.UpArrow))
             deltaPos += Vector2.up * 20;
         if (Input.GetKey(KeyCode.DownArrow))
@@ -163,9 +165,10 @@ public class Player : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        lastRewindTime  = 0F;
+        lastRewindTime  = Time.time;
         //GameObject.Instantiate(RewindMark, transform.position, Quaternion.identity);
         dropGraphics = Resources.Load<GameObject>("Prefabs/DropGraphics");
+        JSC = FindObjectOfType<JoyStickController>();
         ResetDrop();
     }
 
@@ -177,6 +180,9 @@ public class Player : MonoBehaviour
             stateQ.Dequeue();
 
         rewindPos = stateQ.Peek().pos;
+    }
+    private void LateUpdate()
+    {
         Move();
     }
 }

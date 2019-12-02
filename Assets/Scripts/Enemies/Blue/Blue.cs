@@ -24,7 +24,9 @@ public class Blue : MonoBehaviour
             GEffect(i.gameObject);
         foreach (var i in oranges)
             GEffect(i.gameObject);
-        GEffect(GameObject.Find("Player"));
+        var o = FindObjectOfType<Player>();
+        if(o)
+            GEffect(o.gameObject);
 
     }
 
