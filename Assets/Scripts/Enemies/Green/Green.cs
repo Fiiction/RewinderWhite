@@ -31,7 +31,6 @@ public class Green : MonoBehaviour
             targetPos = EC.player.transform.position;
         vec = (targetPos - (Vector2)transform.position).normalized * speed;
         burstTime = (targetPos - (Vector2)transform.position).magnitude / speed - 0.5F;
-        EC.vel = vec;
         StartCoroutine(GreenCoroutine());
     }
 
@@ -42,7 +41,6 @@ public class Green : MonoBehaviour
         {
             speedRate -= Time.deltaTime / 1.5F;
             transform.position += (Vector3)vec * speedRate * Time.deltaTime;
-            EC.vel = vec * speedRate;
         }
         else
             transform.position += (Vector3)vec * Time.deltaTime;

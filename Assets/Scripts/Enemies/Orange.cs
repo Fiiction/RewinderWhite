@@ -43,8 +43,8 @@ public class Orange : MonoBehaviour {
             curAngle -= 2F * Mathf.PI;
         if (curAngle < -Mathf.PI)
             curAngle += 2F * Mathf.PI;
-        EC.vel = new Vector2(Mathf.Cos(curAngle), Mathf.Sin(curAngle)) * speed;
-        transform.position += (Vector3)EC.vel * Time.deltaTime;
+        Vector2 vel = new Vector2(Mathf.Cos(curAngle), Mathf.Sin(curAngle)) * speed;
+        transform.position += (Vector3)vel * Time.deltaTime;
     }
 
     // Update is called once per frame

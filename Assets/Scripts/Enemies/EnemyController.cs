@@ -8,7 +8,6 @@ public class EnemyController : MonoBehaviour
     public bool killEqual = true;
     public float scoreRate;
     public Player player;
-    public Vector2 vel = Vector2.zero;
     GameObject CurrentDrop;
     GameSystem GS;
 
@@ -25,10 +24,11 @@ public class EnemyController : MonoBehaviour
     public float waveL = 1.0F;
     public float waveR = 9.0F;
 
+    public Vector2 lastFramePos,vec;
     public void Kill(bool scoring = true)
     {
         CurrentDrop.transform.SetParent(null);
-        CurrentDrop.GetComponent<DropGraphics>().Fade(vel);
+        CurrentDrop.GetComponent<DropGraphics>().Fade(vec);
 
         var be = new BgrEffect(BgrEffect.Type.Ring, color, waveS, waveR, waveL,
             (Vector2)transform.position);
@@ -53,6 +53,8 @@ public class EnemyController : MonoBehaviour
         
         dg.lineWidth = lineWidth;
         dg.lineLength = lineLength;
+
+        lastFramePos = transform.position;
     }
 
     void DripColor()
@@ -64,7 +66,7 @@ public class EnemyController : MonoBehaviour
             float angle = Random.Range(0F, 2F * Mathf.PI);
             Vector2 deltaPos = Random.Range(0.3F, 1F) * dripRad * new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
             var be = new BgrEffect(BgrEffect.Type.Single, color, Random.Range(0.3F,0.5F), 0F, 1F,
-                (Vector2)transform.position + vel * 0.3F + deltaPos);
+                (Vector2)transform.position + vec * 0.3F + deltaPos);
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
@@ -95,5 +97,7 @@ public class EnemyController : MonoBehaviour
         DripColor();
         if (!GS.Gaming())
             Kill();
+        vec = ((Vector2)transform.position - lastFramePos) / Time.deltaTime;
+        lastFramePos = transform.position;
     }
 }

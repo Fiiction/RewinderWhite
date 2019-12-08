@@ -46,6 +46,7 @@ public class GameSystem : MonoBehaviour
             case State.Easy:
             case State.Hard:
                 gameTime = score = 0f;
+                scoreCnt = 0;
                 GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Generator")
                     , Vector3.zero, Quaternion.identity);
                 GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Player")

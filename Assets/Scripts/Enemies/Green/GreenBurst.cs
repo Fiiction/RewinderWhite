@@ -61,11 +61,13 @@ public class GreenBurst : MonoBehaviour
         be = new BgrEffect(BgrEffect.Type.Ring, new Color(0.8509F, 0.9764F, 0.3372F), 1.6F, 9F, 1.2F,
             (Vector2)transform.position);
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
+        
         yield return new WaitForSeconds(Mathf.PI * 2F / phaseVel);
 
-        be = new BgrEffect(BgrEffect.Type.Ring, new Color(0.8509F, 0.9764F, 0.3372F), 1.2F, 12F, 1.5F,
+        be = new BgrEffect(BgrEffect.Type.Ring, new Color(0.8509F, 0.9764F, 0.3372F), 0.8F, 8F, 1.0F,
             (Vector2)transform.position);
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
+        
         Destroy(gameObject);
     }
 
@@ -81,7 +83,7 @@ public class GreenBurst : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (!GS.Gaming())
-        //   Destroy(gameObject);
+        if (!GS.Gaming())
+           Destroy(gameObject);
     }
 }

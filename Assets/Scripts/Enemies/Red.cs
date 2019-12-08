@@ -35,7 +35,6 @@ public class Red : MonoBehaviour {
         if (!EC.player)
             return;
         vel = speed*(EC.player.transform.position - transform.position).normalized;
-        EC.vel = vel;
         if(inScreen)
         {
             var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.85F));

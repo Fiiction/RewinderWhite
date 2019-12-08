@@ -53,7 +53,6 @@ public class Blue : MonoBehaviour
         Destroy(gameObject, transform.position.magnitude * 2F / speed);
         vel = -transform.position.normalized * speed;
         EC = GetComponent<EnemyController>();
-        EC.vel = vel;
 
         fakeBlock = Resources.Load<GameObject>("Prefabs/BlueFakeBlock");
         StartCoroutine(FakeBlockCoroutine());

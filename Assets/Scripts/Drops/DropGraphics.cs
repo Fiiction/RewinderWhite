@@ -22,6 +22,8 @@ public class DropGraphics : MonoBehaviour
     {
         transform.SetParent(null);
         fadeVel = fv;
+        if(fadeVel.magnitude > 8F)
+            fadeRate = 8F / fadeVel.magnitude;
         fading = true;
     }
     public void Fade() => Fade(Vector2.zero);
