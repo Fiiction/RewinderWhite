@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Blue : MonoBehaviour
 {
-    public float gPower = 30F, speed = 3F;
+    public float gPower = 30F, speed = 3F, dist;
     Vector3 vel;
     EnemyController EC;
     GameObject fakeBlock;
@@ -50,7 +50,8 @@ public class Blue : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Destroy(gameObject, transform.position.magnitude * 2F / speed);
+        //Destroy(gameObject, transform.position.magnitude * 2F / speed);
+        dist = transform.position.magnitude * 2F;
         vel = -transform.position.normalized * speed;
         EC = GetComponent<EnemyController>();
 
@@ -63,5 +64,8 @@ public class Blue : MonoBehaviour
     {
         Gravite();
         transform.position += vel * Time.deltaTime;
+        dist -= speed * Time.deltaTime;
+        if (dist <= 0F)
+            EC.Kill();
     }
 }

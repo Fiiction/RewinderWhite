@@ -6,9 +6,12 @@ public class Red : MonoBehaviour {
     
     public float speed;
     const float XMAX = 11.68F, YMAX = 7.68F;
-    Vector2 vel = Vector2.zero;
+    public Vector2 vel = Vector2.zero;
     EnemyController EC;
-    bool inScreen = false;
+    GameSystem GS;
+    float lifeTime = 0F;
+    bool inScreen = false, expelled = false;
+    float startTime;
 
     public void Set(Vector3 tar)
     {
@@ -19,8 +22,10 @@ public class Red : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        GS = FindObjectOfType<GameSystem>();
         EC = GetComponent<EnemyController>();
         Generator.redCnt++;
+        startTime = Time.time;
     }
 
     bool OutOfBound()
@@ -32,9 +37,14 @@ public class Red : MonoBehaviour {
 
     void Rebound()
     {
-        if (!EC.player)
+        if (!EC.player || expelled)
             return;
-        vel = speed*(EC.player.transform.position - transform.position).normalized;
+        if((transform.position - EC.player.transform.position).magnitude <= 5F)
+        {
+            expelled = true;
+            return;
+        }
+        vel = (EC.player.transform.position - transform.position).normalized;
         if(inScreen)
         {
             var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.85F));
@@ -44,9 +54,9 @@ public class Red : MonoBehaviour {
 
     void Move()
     {
-        transform.position += (Vector3)vel * Time.deltaTime;
-        if (vel == Vector2.zero)
-            Rebound();
+        transform.position += speed * (Vector3)vel * Time.deltaTime;
+        if (vel == Vector2.zero && EC.player)
+            vel = (EC.player.transform.position - transform.position).normalized;
     }
 
     // Update is called once per frame
@@ -62,7 +72,9 @@ public class Red : MonoBehaviour {
                 Rebound();
 
         Move();
-
+        lifeTime += Time.deltaTime;
+        if (lifeTime >= 10F && GS.autoKillEnemy)
+            expelled = true;
         if (transform.position.magnitude >= 30F)
             Destroy(gameObject);
     }

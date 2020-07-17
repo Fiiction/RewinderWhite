@@ -69,8 +69,8 @@
 				float2 cenPos = float2(_CenPosX, _CenPosY);
 				float2 deltaPos = (cenPos - i.vertex.xy);
 				float dist = deltaPos.x * deltaPos.x + deltaPos.y * deltaPos.y;
-				if(dist < _Rad * _Rad)
-				col.a = 0;
+				if(dist < _Rad * _Rad * 0.98)
+					col.a = 0;
                 return col;
             }
             ENDCG

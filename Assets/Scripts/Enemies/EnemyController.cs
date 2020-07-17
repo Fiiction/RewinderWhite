@@ -8,14 +8,32 @@ public class EnemyController : MonoBehaviour
     public bool killEqual = true;
     public float scoreRate;
     public Player player;
-    GameObject CurrentDrop;
+    public float timeAlive = 0F;
+    GameObject CurrentDrop, HollowDrop;
+    DropGraphics dg, hdg;
     GameSystem GS;
 
     [Header("Drop")]
     public Color color;
-    public float tailLength = 1.0F;
+    public float _tailLength = 1.0F;
+    public float tailLength
+    {
+        get { return _tailLength; }
+        set
+        {
+            Debug.Log(gameObject.name);
+            _tailLength = value;
+            if (dg)
+                dg.tailLength = value;
+            if (hdg)
+                hdg.tailLength = value;
+        }
+    }
+    
     public float lineWidth = 1.0F;
     public float lineLength = 1.0F;
+    public bool isBossPart = false;
+    public bool hasNoDrop = false;
     [Header("Drip Color")]
     public float dripFreq = 0.0F;
     public float dripRad = 1F;
@@ -29,7 +47,11 @@ public class EnemyController : MonoBehaviour
     {
         CurrentDrop.transform.SetParent(null);
         CurrentDrop.GetComponent<DropGraphics>().Fade(vec);
-
+        if(isBossPart)
+        {
+            HollowDrop.transform.SetParent(null);
+            HollowDrop.GetComponent<DropGraphics>().Fade(vec);
+        }
         var be = new BgrEffect(BgrEffect.Type.Ring, color, waveS, waveR, waveL,
             (Vector2)transform.position);
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
@@ -47,12 +69,25 @@ public class EnemyController : MonoBehaviour
     {
         GS = FindObjectOfType<GameSystem>();
         CurrentDrop = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/DropGraphics"), transform);
-        var dg = CurrentDrop.GetComponent<DropGraphics>();
+        dg = CurrentDrop.GetComponent<DropGraphics>();
         dg.basicColor = color;
         dg.tailLength = tailLength;
         
         dg.lineWidth = lineWidth;
         dg.lineLength = lineLength;
+
+        if(isBossPart)
+        {
+            HollowDrop = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/DropGraphics"), transform);
+            hdg = HollowDrop.GetComponent<DropGraphics>();
+            hdg.basicColor = Color.white;
+            hdg.tailLength = tailLength;
+            hdg.lineWidth = 0F;
+            hdg.lineLength = 0F;
+            hdg.GetComponent<SpriteRenderer>().sortingOrder += 2;
+            hdg.transform.Find("Tail").GetComponent<TrailRenderer>().sortingOrder += 2;
+            HollowDrop.transform.localScale = Vector3.zero;
+        }
 
         lastFramePos = transform.position;
     }
@@ -71,8 +106,10 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (timeAlive < 0.5F)
+            return;
         if (collision.gameObject.tag == "Player")
         {
             FindObjectOfType<GameSystem>().killColor = color;
@@ -81,23 +118,39 @@ public class EnemyController : MonoBehaviour
         if (collision.gameObject.tag == "Enemy")
         {
             var c = collision.gameObject.GetComponent<EnemyController>();
+            if (!c)
+                return;
+            if(c.timeAlive < 0.5F)
+                return;
             if (c.strength < strength)
             {
                 c.Kill();
             }
-            if(c.strength == strength && killEqual)
+            if (c.strength == strength && killEqual)
             {
                 c.Kill();
             }
         }
     }
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        OnTriggerEnter2D(collision);
+    }
+    float hollowRate = 0F;
     // Update is called once per frame
     void Update()
     {
         DripColor();
         if (!GS.Gaming())
             Kill();
+        if(isBossPart)
+        {
+            float r = (1 - GS.bossHealth / GS.maxBossHealth)*0.9F;
+            hollowRate += (r - hollowRate) * 2F * Time.deltaTime;
+            HollowDrop.transform.localScale = new Vector3(hollowRate,hollowRate,1F);
+        }
         vec = ((Vector2)transform.position - lastFramePos) / Time.deltaTime;
         lastFramePos = transform.position;
+        timeAlive += Time.deltaTime;
     }
 }

@@ -65,7 +65,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -87,7 +87,6 @@ MonoBehaviour:
   killEqual: 1
   scoreRate: 1
   player: {fileID: 0}
-  vel: {x: 0, y: 0}
   color: {r: 0.52156866, g: 0.6901961, b: 0.5921569, a: 1}
   tailLength: 1
   lineWidth: 1
@@ -97,6 +96,8 @@ MonoBehaviour:
   waveS: 0.2
   waveL: 1.4
   waveR: 9
+  lastFramePos: {x: 0, y: 0}
+  vec: {x: 0, y: 0}
 --- !u!114 &5917598807580688496
 MonoBehaviour:
   m_ObjectHideFlags: 0

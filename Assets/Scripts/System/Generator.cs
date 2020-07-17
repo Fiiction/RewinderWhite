@@ -15,10 +15,10 @@ public class Generator : MonoBehaviour
     {
         switch(GS.state)
         {
-            case GameSystem.State.Easy:
-                return 0.9F + (GS.gameTime / (GS.gameTime + 60F)) * 0.24F;
-            case GameSystem.State.Hard:
-                return 0.95F + (GS.gameTime / (GS.gameTime + 60F)) * 0.2F;
+            case GameSystem.State.EasyLevel:
+                return 0.9F + (GS.gameTime / (GS.gameTime + 60F)) * 0.2F;
+            case GameSystem.State.HardLevel:
+                return 0.95F + (GS.gameTime / (GS.gameTime + 60F)) * 0.16F;
         }
         return 1.0F;
     }
@@ -36,7 +36,6 @@ public class Generator : MonoBehaviour
         o1 = GameObject.Instantiate(Orange, pos2, Quaternion.identity);
         o1.GetComponent<Orange>().speed *= SpeedMultiplier();
         o1.GetComponent<Orange>().angSpeed *= SpeedMultiplier();
-
     }
 
     void GenerateRed()
@@ -82,19 +81,19 @@ public class Generator : MonoBehaviour
     {
         switch(GS.state)
         {
-            case GameSystem.State.Hard:
+            case GameSystem.State.HardLevel:
                 if (GS.gameTime <= 15) return 4;
                 if (GS.gameTime <= 30) return 6;
                 if (GS.gameTime <= 50) return 8;
                 if (GS.gameTime <= 75) return 10;
                 if (GS.gameTime <= 105) return 12;
                 return 14;
-            case GameSystem.State.Easy:
-                if (GS.gameTime <= 12) return 2;
-                if (GS.gameTime <= 24) return 4;
-                if (GS.gameTime <= 40) return 6;
-                if (GS.gameTime <= 60) return 8;
-                if (GS.gameTime <= 85) return 10;
+            case GameSystem.State.EasyLevel:
+                if (GS.gameTime <= 16) return 2;
+                if (GS.gameTime <= 30) return 4;
+                if (GS.gameTime <= 45) return 6;
+                if (GS.gameTime <= 64) return 8;
+                if (GS.gameTime <= 90) return 10;
                 return 12;
         }
         return -2;
@@ -104,9 +103,9 @@ public class Generator : MonoBehaviour
     {
         switch (GS.state)
         {
-            case GameSystem.State.Hard:
+            case GameSystem.State.HardLevel:
                 return 0.16F;
-            case GameSystem.State.Easy:
+            case GameSystem.State.EasyLevel:
                 if (GS.gameTime <= 20) return 0;
                 else if (GS.gameTime <= 40) return 0.12F;
                 else return 0.16F;
@@ -117,7 +116,9 @@ public class Generator : MonoBehaviour
     float nextGenerateTime = 0F;
     void Generate()
     {
-        if (orangeCnt + redCnt < BasicMinCnt() && GS.gameTime >= nextGenerateTime)
+        if (orangeCnt + redCnt < BasicMinCnt())
+            nextGenerateTime -= Time.deltaTime;
+        if (nextGenerateTime < 0F)
         {
             if (Random.Range(0F, 1F) <= RedRate())
                 GenerateRed();
@@ -126,11 +127,11 @@ public class Generator : MonoBehaviour
 
             switch (GS.state)
             {
-                case GameSystem.State.Hard:
-                    nextGenerateTime = GS.gameTime + 1.6F * 80F / (80F + GS.gameTime);
+                case GameSystem.State.HardLevel:
+                    nextGenerateTime = 1.2F * 80F / (80F + GS.gameTime);
                     break;
-                case GameSystem.State.Easy:
-                    nextGenerateTime = GS.gameTime + 3F * 60F / (60F + GS.gameTime);
+                case GameSystem.State.EasyLevel:
+                    nextGenerateTime = 2F * 60F / (60F + GS.gameTime);
                     break;
                 default:
                     nextGenerateTime = 99999F;
@@ -165,11 +166,11 @@ public class Generator : MonoBehaviour
         Green = Resources.Load<GameObject>("Prefabs/Enemies/Green/Green");
         switch (GS.state)
         {
-            case GameSystem.State.Hard:
+            case GameSystem.State.HardLevel:
                 nextBlue = 5F;
                 nextGreen = 20F;
                 break;
-            case GameSystem.State.Easy:
+            case GameSystem.State.EasyLevel:
                 nextBlue = 35F;
                 nextGreen = 55F;
                 break;

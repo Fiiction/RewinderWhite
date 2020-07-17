@@ -5,12 +5,13 @@ using DG.Tweening;
 
 public class BgrEffect
 {
-    public enum Type { Single, Circle, Ring, OutSide, InnerRing, OuterRing};
+    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
     public Vector2 pos;
-    public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p)
+    public int memIndex;
+    public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p,int mI=0)
     {
         c = StandardColors.Adjust(c);
         type = t; color = c;
@@ -18,6 +19,7 @@ public class BgrEffect
         life = l; startTime = Time.time;
         pos = p;
         phase = 0;
+        memIndex = mI;
     }
 }
 
@@ -162,7 +164,7 @@ public class BackgroundSystem : MonoBehaviour
 
     }
     void SingleEffect(Vector2Int index, Color color, float str)
-    {
+    { 
         if (!BlockColor.ContainsKey(index))
             return;
         BlockColor[index] = Color.Lerp(BlockColor[index], color, str);
@@ -171,25 +173,11 @@ public class BackgroundSystem : MonoBehaviour
     void CalcColor()
     {
         Vector2Int index;
-        float h, s, v;
         for (int i = 0; i < 40; i++)
             for (int j = 0; j < 20; j++)
             {
                 index = new Vector2Int(i, j);
                 BlockColor[index] = bgrColor;
-                /*
-                Color.RGBToHSV(StandardColors.COLORORANGE, out h, out s, out v);
-                s = Random.Range(s*0.2F, s);
-                v = Random.Range(v, v+0.1F);
-                if (InBoundary(index))
-                {
-                    s = 0F;
-                    v = 1F;
-                }
-                BlockColor[index] = Color.HSVToRGB(h,s,v);
-                if (Random.Range(0F, 1F) < 0.9F)
-                    BlockColor[index] = Color.white;
-                    */
             }
         DeleteList = new List<BgrEffect>();
         foreach (var i in Effect)
@@ -221,10 +209,21 @@ public class BackgroundSystem : MonoBehaviour
                         }
                     break;
                 case BgrEffect.Type.Ring:
+                case BgrEffect.Type.Focus:
                 case BgrEffect.Type.InnerRing:
                 case BgrEffect.Type.OuterRing:
-                    str = i.strength * (1F - i.phase) * (1F - i.phase);
-                    rad = i.radius * Mathf.Pow(i.phase, 1.3F);
+                case BgrEffect.Type.MemRing:
+                    int minX = 2 + i.memIndex * 4;
+                    if( i.type == BgrEffect.Type.Focus)
+                    {
+                        str = i.strength * (i.phase) * (i.phase);
+                        rad = i.radius * Mathf.Pow(1F - i.phase, 1.3F);
+                    }
+                    else
+                    {
+                        str = i.strength * (1F - i.phase) * (1F - i.phase);
+                        rad = i.radius * Mathf.Pow(i.phase, 1.3F);
+                    }
                     float halfWidth = rad * 0.3F + 1F;
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad * 1.6F + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad * 1.6F + 1) + 20F); x++)
                         for (int y = Mathf.FloorToInt(i.pos.y - (rad * 1.6F + 1) + 10F); y <= Mathf.FloorToInt(i.pos.y + (rad * 1.6F + 1) + 10F); y++)
@@ -234,6 +233,13 @@ public class BackgroundSystem : MonoBehaviour
                                 continue;
                             if (i.type == BgrEffect.Type.OuterRing && InBoundary(index))
                                 continue;
+                            if(i.type == BgrEffect.Type.MemRing)
+                            {
+                                if (x < minX || x > minX + 3)
+                                    continue;
+                                if (y <= 12 && y >= 7)
+                                    continue;
+                            }
                             strRate = 0F;
                             foreach (var vec in EPS)
                             {
@@ -275,6 +281,8 @@ public class BackgroundSystem : MonoBehaviour
     }
     public void AddEffect(BgrEffect be)
     {
+        if (be.strength == 0 || be.life == 0)
+            return;
         Effect.Add(be);
     }
     // Update is called once per frame
@@ -282,39 +290,14 @@ public class BackgroundSystem : MonoBehaviour
     {
         CalcColor();
         Camera.main.backgroundColor = bgrColor;
-        /*
-        for (int i = 1; i <= 160; i++)
-            if (Random.Range(0F, 1F) < Time.deltaTime)
-            {
-                float r = Random.Range(7F, 26F);
-                float theta = Random.Range(0F, 2F) * Mathf.PI;
-                Vector2 pos = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta)) * r;
-                BgrEffect be;
-                if (InBoundary(BlockIndex(pos)))
-                {
-                    if (Random.Range(0F, 1F) < 0.7F)
-                        continue;
-                    be = new BgrEffect(BgrEffect.Type.Single, Color.black, r*0.03F, 0F, 1F, pos);
-                }
-                else
-                    be = new BgrEffect(BgrEffect.Type.Single, StandardColors.COLORORANGE, r * 0.03F, 0F, 1F, pos);
-                AddEffect(be);
 
-            }
-            */
-            /*
-        if (Random.Range(0F, 1F) < Time.deltaTime * 30F)
-            MeteorEffects.Add(new MeteorEffect());
-        foreach(var i in MeteorEffects)
-        {
-            i.Update(this);
-        }
-        */
-        if(Input.GetMouseButtonDown(0))
+        if(Input.GetMouseButtonDown(0) && !GS.Gaming())
         {
             Vector2 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            AddEffect( new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 24F, 2F, pos));
-
+            if(GS.state == GameSystem.State.Ending)
+                AddEffect(new BgrEffect(BgrEffect.Type.Ring, new Color(1F, 1F, 1F), 0.8F, 24F, 2F, pos));
+            else
+                AddEffect( new BgrEffect(BgrEffect.Type.Ring, new Color(0F, 0F, 0F), 0.18F, 24F, 2F, pos));
         }
     }
 }

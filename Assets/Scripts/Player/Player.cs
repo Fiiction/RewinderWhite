@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-struct State
+public struct PosState
 {
     public float tim;
     public Vector3 pos;
-    public State(Vector3 p, float t)
+    public PosState(Vector3 p, float t)
     {
         tim = t;
         pos = p;
     }
 };
 
-struct TouchState
+public struct TouchState
 {
     public float tim;
     public Vector2 pos;
@@ -27,18 +27,18 @@ public class Player : MonoBehaviour
 {
     public float speed;
     public float rewindTime;
-    public bool alive = true;
+    public bool alive = true, canRewind = false;
     float lastRewindTime;
 
     public Vector3 rewindPos;
-    //public GameObject RewindMark;
     GameObject dropGraphics;
     GameObject CurrentDrop;
-    Queue<State> stateQ = new Queue<State>();
+    Queue<PosState> stateQ = new Queue<PosState>();
     Queue<TouchState> touchQ = new Queue<TouchState>();
     Vector2 touchSum = Vector2.zero;
     JoyStickController JSC;
     const float XMAX = 11.68F, YMAX = 7.68F;
+    GameSystem GS;
 
     public void Kill()
     {
@@ -46,13 +46,15 @@ public class Player : MonoBehaviour
             return;
         alive = false;
         CurrentDrop.GetComponent<DropGraphics>().Fade();
-        FindObjectOfType<GameSystem>().SetState(GameSystem.State.Ending);
+        if(GS.state == GameSystem.State.EasyLevel || GS.state == GameSystem.State.HardLevel || 
+            GS.state == GameSystem.State.MemoryLevel)
+            GS.SetState(GameSystem.State.Ending);
         Destroy(gameObject);
     }
     IEnumerator RewindEffectCoroutine()
     {
         Vector2 rPos = transform.position;
-        State[] wavePos = stateQ.ToArray();
+        PosState[] wavePos = stateQ.ToArray();
         float hue = Random.Range(0F,1F);
         int f = (wavePos.Length - 1) / 6;
         if (f <= 0)
@@ -82,14 +84,14 @@ public class Player : MonoBehaviour
     {
         CurrentDrop = GameObject.Instantiate(dropGraphics, transform);
         CurrentDrop.GetComponent<DropGraphics>().basicColor = StandardColors.COLORPLAYER;
+        CurrentDrop.GetComponent<DropGraphics>().tailLength = 0.91F;
     }
     public bool Rewind()
     {
         if (!alive)
             return false;
-        if (Time.time < lastRewindTime + rewindTime)
+        if (!canRewind)
             return false;
-
         CurrentDrop.GetComponent<DropGraphics>().Fade();
         transform.position = rewindPos;
         StartCoroutine(RewindEffectCoroutine());
@@ -98,7 +100,19 @@ public class Player : MonoBehaviour
         ResetDrop();
         return true;
     }
-    float lastTouchBoundaryTime = -1F;
+    float lastTouchBoundaryTime = -1F, lastBoundaryWarningTime = -1F;
+
+    void BoundaryWarning()
+    {
+        if (Time.time <= lastBoundaryWarningTime + 3F)
+            return;
+        if (Time.time <= lastTouchBoundaryTime + 2F)
+            return;
+        lastBoundaryWarningTime = Time.time;
+        var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.3F, 14F, 1.6F, (Vector2)(transform.position * 0.85F));
+        FindObjectOfType<BackgroundSystem>().AddEffect(be);
+    }
+
     void TouchBoundary()
     {
         if (Time.time <= lastTouchBoundaryTime + 1.2F)
@@ -159,12 +173,15 @@ public class Player : MonoBehaviour
             deltaPos.y = 0;
             TouchBoundary();
         }
+        if (Mathf.Abs(transform.position.y) > YMAX - 2.4F || Mathf.Abs(transform.position.x) > XMAX - 2.4F)
+            BoundaryWarning();
         transform.position = transform.position + (Vector3)deltaPos * Time.deltaTime;
     }
 
     // Use this for initialization
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
         lastRewindTime  = Time.time;
         //GameObject.Instantiate(RewindMark, transform.position, Quaternion.identity);
         dropGraphics = Resources.Load<GameObject>("Prefabs/DropGraphics");
@@ -172,14 +189,24 @@ public class Player : MonoBehaviour
         ResetDrop();
     }
 
+    Vector3 prevP;
+    float prevT;
     // Update is called once per frame
     void Update()
     {
-        stateQ.Enqueue(new State(transform.position, Time.time));
+        stateQ.Enqueue(new PosState(transform.position, Time.time));
+        /*
+        for(float i = 0.1F;i<=1F;i+=0.1F)
+        {
+            stateQ.Enqueue(new PosState(i*transform.position+(1-i)*prevP, i*Time.time+(1-i)*prevT));
+        }
+        */
         while (stateQ.Peek().tim < Time.time - rewindTime)
             stateQ.Dequeue();
-
+        prevP = transform.position;
+        prevT = Time.time;
         rewindPos = stateQ.Peek().pos;
+        canRewind = (Time.time >= lastRewindTime + rewindTime);
     }
     private void LateUpdate()
     {

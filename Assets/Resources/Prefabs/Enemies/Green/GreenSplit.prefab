@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5917598807580688502}
   - component: {fileID: 5917598807580688497}
   - component: {fileID: 7214846795576688249}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: GreenSplit
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -65,7 +65,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -87,16 +87,20 @@ MonoBehaviour:
   killEqual: 0
   scoreRate: 0
   player: {fileID: 0}
-  vel: {x: 0, y: 0}
+  timeAlive: 0
   color: {r: 0.6800027, g: 0.8113208, b: 0.14159843, a: 1}
-  tailLength: 0
+  _tailLength: 0
   lineWidth: 2.5
   lineLength: 2
+  isBossPart: 0
+  hasNoDrop: 0
   dripFreq: 0
   dripRad: 4
   waveS: 0
   waveL: 1.4
   waveR: 9
+  lastFramePos: {x: 0, y: 0}
+  vec: {x: 0, y: 0}
 --- !u!114 &7214846795576688249
 MonoBehaviour:
   m_ObjectHideFlags: 0

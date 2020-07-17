@@ -5,12 +5,32 @@ using UnityEngine;
 public class DropGraphics : MonoBehaviour
 {
     TrailRenderer tail, line;
-    public float tailLength = 1.0F, lineWidth = 1.0F, lineLength = 1.0F;
+    public float _tailLength = 1.0F, lineWidth = 1.0F, lineLength = 1.0F;
+    public float tailLength
+    {
+        get { return _tailLength;  }
+        set
+        {
+            _tailLength = value;
+            if(tail)
+                tail.time = 0.18F * value * transform.lossyScale.x;
+        }
+    }
     SpriteRenderer sr;
-    public Color basicColor;
-    float fadeRate = 1F;
+    public Color _basicColor;
+    public Color basicColor
+    {
+        get { return _basicColor; }
+        set
+        {
+            _basicColor = value;
+            if(sr)
+                UpdateColor();
+        }
+    }
+    float fadeRate = 1F,fadeSpeed = 1F;
     bool fading = false;
-    Vector2 fadeVel;
+    Vector2 fadeVec;
 
     private void Awake()
     {
@@ -21,9 +41,9 @@ public class DropGraphics : MonoBehaviour
     public void Fade(Vector2 fv)
     {
         transform.SetParent(null);
-        fadeVel = fv;
-        if(fadeVel.magnitude > 8F)
-            fadeRate = 8F / fadeVel.magnitude;
+        fadeVec = fv;
+        if(fadeVec.magnitude > 8F)
+            fadeSpeed = fadeVec.magnitude / 8F;
         fading = true;
     }
     public void Fade() => Fade(Vector2.zero);
@@ -36,10 +56,20 @@ public class DropGraphics : MonoBehaviour
         line = transform.Find("Line").GetComponent<TrailRenderer>();
         sr = GetComponent<SpriteRenderer>();
         float scale = transform.lossyScale.x;
-        tail.time = 0.18F * tailLength * scale;
-        tail.widthMultiplier = 0.6F * scale;
-        line.time = 2.0F * lineLength;
-        line.widthMultiplier = 0.024F * lineWidth * scale;
+        if (tailLength == 0F)
+            Destroy(tail.gameObject);
+        else
+        {
+            tail.time = 0.18F * tailLength * scale;
+            tail.widthMultiplier = 0.6F * scale;
+        }
+        if (lineLength == 0F)
+            Destroy(line.gameObject);
+        else
+        {
+            line.time = 2.2F * lineLength;
+            line.widthMultiplier = 0.024F * lineWidth * scale;
+        }
     }
 
     Gradient SetGradient(Color color)
@@ -63,14 +93,19 @@ public class DropGraphics : MonoBehaviour
     {
         //Color color = Color.Lerp(basicColor, Color.white, fadeRate);
         Color color = basicColor;
-        color.a = 1.0F - fadeRate;
+        color.a = basicColor.a * (1.0F - fadeRate);
         Gradient gra = SetGradient(color);
-        sr.color = color;
-        line.colorGradient = gra;
-        tail.material.SetColor("_Color", color);
+        if(sr)
+            sr.color = color;
+        if(line)
+            line.colorGradient = gra;
+        if(tail)
+            tail.material.SetColor("_Color", color);
     }
     void UpdateTailMaterial()
     {
+        if (!tail)
+            return;
         float r = 0.016F * Screen.height* transform.lossyScale.x;
         Vector3 v = Camera.main.WorldToScreenPoint(transform.position);
         tail.material.SetFloat("_Rad", r);
@@ -81,10 +116,21 @@ public class DropGraphics : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(fading)
+        float scale = transform.lossyScale.x;
+        if(tail)
         {
-            transform.position += (Vector3)fadeVel * Time.deltaTime;
-            fadeRate += Time.deltaTime * 3F;
+            tail.time = 0.18F * tailLength * scale;
+            tail.widthMultiplier = 0.6F * scale;
+        }
+        if(line)
+        {
+            line.time = 2.2F * lineLength;
+            line.widthMultiplier = 0.024F * lineWidth * scale;
+        }
+        if (fading)
+        {
+            transform.position += (Vector3)fadeVec * Time.deltaTime;
+            fadeRate += Time.deltaTime * fadeSpeed * 3F;
             UpdateColor();
             if (fadeRate >= 1F)
                 Destroy(gameObject);

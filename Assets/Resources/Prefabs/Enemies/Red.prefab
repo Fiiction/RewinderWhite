@@ -65,7 +65,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -87,16 +87,20 @@ MonoBehaviour:
   killEqual: 1
   scoreRate: 3
   player: {fileID: 0}
-  vel: {x: 0, y: 0}
+  timeAlive: 0
   color: {r: 1, g: 0.23529412, b: 0.23529412, a: 1}
-  tailLength: 0.6
+  _tailLength: 0.7
   lineWidth: 1
   lineLength: 1
+  isBossPart: 0
+  hasNoDrop: 0
   dripFreq: 0.5
   dripRad: 3
   waveS: 0.2
   waveL: 0.8
   waveR: 12
+  lastFramePos: {x: 0, y: 0}
+  vec: {x: 0, y: 0}
 --- !u!114 &8627194482217396964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,3 +114,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 8
+  vel: {x: 0, y: 0}
