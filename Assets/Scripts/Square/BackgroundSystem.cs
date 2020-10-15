@@ -13,6 +13,7 @@ public class BgrEffect
     public int memIndex;
     public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p,int mI=0)
     {
+        Debug.Log(t);
         c = StandardColors.Adjust(c);
         type = t; color = c;
         strength = s; radius = r;
@@ -169,7 +170,15 @@ public class BackgroundSystem : MonoBehaviour
             return;
         BlockColor[index] = Color.Lerp(BlockColor[index], color, str);
     }
-
+    
+    float Noise(float x, float y)
+    {
+        x *= 64f;y *= 64f;
+        float z = Time.time * 0.9f;
+        float ret = Mathf.PerlinNoise(x, x - z) + Mathf.PerlinNoise(y + z, x);
+        ret = ret * 2.5f - 2f;
+        return Mathf.Clamp01(ret);
+    }
     void CalcColor()
     {
         Vector2Int index;
@@ -253,6 +262,7 @@ public class BackgroundSystem : MonoBehaviour
                             SingleEffect(index, i.color, str * strRate);
                         }
                     break;
+                    break;
                 case BgrEffect.Type.OutSide:
                     str = i.strength * Mathf.Min(1F, 3F * (1F - i.phase));
                     rad = i.radius * Mathf.Min(1F, 6F * (i.phase));
@@ -263,7 +273,14 @@ public class BackgroundSystem : MonoBehaviour
                             if (InBoundary(index))
                                 continue;
                             dist = (i.pos - BlockCenterPos(index)).magnitude;
-                            SingleEffect(index, i.color, str * (rad - dist) / rad);
+                            //float noise = Noise(x, y) * 1.2f + 0.2f;
+                            float noise = 0.2f;
+                            if (x % 2 == 0)
+                                noise += 0.5f;
+                            if (y % 2 == 0)
+                                noise += 0.5f;
+                            float clamp = Mathf.Clamp01(5 * (rad - dist) / rad);
+                            SingleEffect(index, i.color, str * noise * clamp);
                         }
                     break;
 
@@ -287,7 +304,7 @@ public class BackgroundSystem : MonoBehaviour
     }
     // Update is called once per frame
     void Update()
-    {
+    {         
         CalcColor();
         Camera.main.backgroundColor = bgrColor;
 

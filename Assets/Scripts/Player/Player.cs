@@ -104,9 +104,9 @@ public class Player : MonoBehaviour
 
     void BoundaryWarning()
     {
-        if (Time.time <= lastBoundaryWarningTime + 3F)
+        if (Time.time <= lastBoundaryWarningTime + 6F)
             return;
-        if (Time.time <= lastTouchBoundaryTime + 2F)
+        if (Time.time <= lastTouchBoundaryTime + 5F)
             return;
         lastBoundaryWarningTime = Time.time;
         var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.3F, 14F, 1.6F, (Vector2)(transform.position * 0.85F));
@@ -115,7 +115,7 @@ public class Player : MonoBehaviour
 
     void TouchBoundary()
     {
-        if (Time.time <= lastTouchBoundaryTime + 1.2F)
+        if (Time.time <= lastTouchBoundaryTime + 1.8F)
             return;
         lastTouchBoundaryTime = Time.time;
         var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.5F, 12F, 1.2F, (Vector2)(transform.position * 0.78F));
