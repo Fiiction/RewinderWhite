@@ -42,12 +42,10 @@ public class Generator : MonoBehaviour
     {
         float angle = Random.Range(-2F, 2F) / 6F * Mathf.PI;
         Vector3 pos1 = new Vector3(28 * Mathf.Cos(angle), 17 * Mathf.Sin(angle)),
-            pos2 = new Vector3(-28 * Mathf.Cos(angle), 17 * Mathf.Sin(angle));
+            pos2 = new Vector3(-28 * Mathf.Cos(angle), -17 * Mathf.Sin(angle));
 
         var r1 = GameObject.Instantiate(Red, pos1, Quaternion.identity);
         r1.GetComponent<Red>().speed *= SpeedMultiplier();
-        if ((orangeCnt + redCnt) % 2 == 1)
-            return;
         r1 = GameObject.Instantiate(Red, pos2, Quaternion.identity);
         r1.GetComponent<Red>().speed *= SpeedMultiplier();
     }

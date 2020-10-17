@@ -109,16 +109,18 @@ public class Player : MonoBehaviour
         if (Time.time <= lastTouchBoundaryTime + 5F)
             return;
         lastBoundaryWarningTime = Time.time;
-        var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.3F, 14F, 1.6F, (Vector2)(transform.position * 0.85F));
+        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.35F, 12F, 1.5F, (Vector2)(transform.position * 0.78F));
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
 
     void TouchBoundary()
     {
-        if (Time.time <= lastTouchBoundaryTime + 1.8F)
+        if (Time.time <= lastBoundaryWarningTime + 2F)
+            return;
+        if (Time.time <= lastTouchBoundaryTime + 1.6F)
             return;
         lastTouchBoundaryTime = Time.time;
-        var be = new BgrEffect(BgrEffect.Type.OutSide, Color.black, 0.5F, 12F, 1.2F, (Vector2)(transform.position * 0.78F));
+        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.5F, 12F, 2F, (Vector2)(transform.position * 0.78F));
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
     void Move()

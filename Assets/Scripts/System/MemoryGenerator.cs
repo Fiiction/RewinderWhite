@@ -35,8 +35,6 @@ public class MemoryGenerator : MonoBehaviour
         o1.GetComponent<Orange>().speed *= SpeedMultiplier();
         o1.GetComponent<Orange>().angSpeed *= SpeedMultiplier();
         o1.GetComponent<EnemyController>().color = orangeColor;
-        if ((Generator.orangeCnt + Generator.redCnt) % 2 == 1)
-            return;
         o1 = GameObject.Instantiate(Orange, pos2, Quaternion.identity);
         o1.GetComponent<Orange>().speed *= SpeedMultiplier();
         o1.GetComponent<Orange>().angSpeed *= SpeedMultiplier();
@@ -47,7 +45,7 @@ public class MemoryGenerator : MonoBehaviour
     {
         float angle = Random.Range(-2F, 2F) / 6F * Mathf.PI;
         Vector3 pos1 = new Vector3(28 * Mathf.Cos(angle), 17 * Mathf.Sin(angle)),
-            pos2 = new Vector3(-28 * Mathf.Cos(angle), 17 * Mathf.Sin(angle));
+            pos2 = new Vector3(-28 * Mathf.Cos(angle), -17 * Mathf.Sin(angle));
 
         var r1 = GameObject.Instantiate(Red, pos1, Quaternion.identity);
         r1.GetComponent<Red>().speed *= SpeedMultiplier();

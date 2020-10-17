@@ -13,10 +13,16 @@ public class Red : MonoBehaviour {
     bool inScreen = false, expelled = false;
     float startTime;
 
-    public void Set(Vector3 tar)
+    public void Set()
     {
-        vel = speed * (tar - transform.position).normalized;
+        Vector3 tar = Vector3.zero;
+        tar.x = transform.position.y;
+        tar.y = -transform.position.x;
+        tar.Normalize();
+        tar *= 2f;
+        vel = (tar - transform.position).normalized;
         inScreen = false;
+        EC.strength++;
     }
 
     // Use this for initialization
@@ -47,7 +53,7 @@ public class Red : MonoBehaviour {
         vel = (EC.player.transform.position - transform.position).normalized;
         if(inScreen)
         {
-            var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.85F));
+            var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.83F));
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
@@ -56,20 +62,22 @@ public class Red : MonoBehaviour {
     {
         transform.position += speed * (Vector3)vel * Time.deltaTime;
         if (vel == Vector2.zero && EC.player)
-            vel = (EC.player.transform.position - transform.position).normalized;
+            Set();
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
         if (!inScreen)
         {
             if (!OutOfBound())
                 inScreen = true;
         }
-        else
-            if (OutOfBound())
+        else if (OutOfBound())
+            {
+                EC.strength--;
                 Rebound();
+            }
 
         Move();
         lifeTime += Time.deltaTime;

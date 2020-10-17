@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class BgrEffect
 {
-    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing};
+    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing, Boundary, BoundaryWarning};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
@@ -13,7 +13,7 @@ public class BgrEffect
     public int memIndex;
     public BgrEffect(Type t, Color c, float s, float r, float l, Vector2 p,int mI=0)
     {
-        Debug.Log(t);
+        //Debug.Log(t);
         c = StandardColors.Adjust(c);
         type = t; color = c;
         strength = s; radius = r;
@@ -126,49 +126,12 @@ public class BackgroundSystem : MonoBehaviour
         Generate();
         AddEffect(new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 42F, 4F, Vector2.zero));
     }
-    IEnumerator StartingWaveCoroutine()
-    {
-        BgrEffect be;
-        for (int i = 1; i <= 12; i++)
-        {
-            Vector2 pos = new Vector2(Random.Range(-12F, 12F), Random.Range(-9F, 9F));
-            bool inner = Random.Range(0F, 1F) < 0.5F;
-            float str = 0.6F * (30F - i) / 30F;
-            if (inner)
-                be = new BgrEffect(BgrEffect.Type.InnerRing, new Color(0.8F, 0.8F, 0.8F), str, 24F, 3F, pos);
-            else
-                be = new BgrEffect(BgrEffect.Type.OuterRing, StandardColors.COLORORANGE, str, 24F, 3F, pos);
 
-            AddEffect(be);
-            yield return new WaitForSeconds(0.2F);
-
-        }
-
-    }
-    IEnumerator StartingDiamoundCoroutine(Vector2Int index)
-    {
-        Vector2 pos = BlockCenterPos(index);
-        //float str = Mathf.PerlinNoise(12F * pos.x, 0.1F * pos.y);
-        float str = (Mathf.Cos(12F * pos.x + 0.5F * pos.y) + 1) * 0.5F;
-        float waitTime = 0.06F * Mathf.Abs(pos.y) + 0.12F * Mathf.Abs(pos.x) + Random.Range(0F, 0.4F);
-        Color color = InBoundary(index) ? Color.black : StandardColors.Adjust(StandardColors.COLORORANGE);
-        float life = Random.Range(0.7F, 1.1F);
-        if (InBoundary(index))
-            str *= 0.6F;
-        else
-            str *= 1.2F;
-
-        yield return new WaitForSeconds(waitTime * 0.2F);
-        AddEffect(new BgrEffect(BgrEffect.Type.Single, color, str * 0.2F, 0, life * 0.5F, pos));
-        yield return new WaitForSeconds(waitTime * 0.7F);
-        AddEffect(new BgrEffect(BgrEffect.Type.Single, color, str, 0, life, pos));
-
-    }
-    void SingleEffect(Vector2Int index, Color color, float str)
+    void SingleEffect(Vector2Int index, Color color, float stre)
     { 
         if (!BlockColor.ContainsKey(index))
             return;
-        BlockColor[index] = Color.Lerp(BlockColor[index], color, str);
+        BlockColor[index] = Color.Lerp(BlockColor[index], color, stre);
     }
     
     float Noise(float x, float y)
@@ -179,6 +142,17 @@ public class BackgroundSystem : MonoBehaviour
         ret = ret * 2.5f - 2f;
         return Mathf.Clamp01(ret);
     }
+
+    void FadingLine(Vector2Int startPos, Vector2Int dir,Color c, float startStrength = 0.6f, float multiplier = 0.93f)
+	{
+        float stre = startStrength;
+        for(Vector2Int pos = startPos; InScreen(pos); pos += dir)
+		{
+            SingleEffect(pos, c, stre);
+            stre *= multiplier;
+		}
+	}
+
     void CalcColor()
     {
         Vector2Int index;
@@ -197,24 +171,25 @@ public class BackgroundSystem : MonoBehaviour
                 DeleteList.Add(i);
                 continue;
             }
-            float str, rad;
-            float dist, strRate;
+            float stre, rad;
+            float dist, streRate, bStre;
+            float halfWidth;
             switch (i.type)
             {
                 case BgrEffect.Type.Single:
                     index = BlockIndex(i.pos);
-                    str = i.strength * Mathf.Min(1F, 2F * (1F - i.phase), 5F * i.phase);
-                    SingleEffect(index, i.color, str);
+                    stre = i.strength * Mathf.Min(1F, 2F * (1F - i.phase), 5F * i.phase);
+                    SingleEffect(index, i.color, stre);
                     break;
                 case BgrEffect.Type.Circle:
-                    str = i.strength * Mathf.Min(1F, 2F * (1F - i.phase));
+                    stre = i.strength * Mathf.Min(1F, 2F * (1F - i.phase));
                     rad = i.radius * Mathf.Min(1F, 3F * (i.phase));
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad + 1) + 20F); x++)
                         for (int y = Mathf.FloorToInt(i.pos.y - (rad + 1) + 10F); y <= Mathf.FloorToInt(i.pos.y + (rad + 1) + 10F); y++)
                         {
                             index = new Vector2Int(x, y);
                             dist = (i.pos - BlockCenterPos(index)).magnitude;
-                            SingleEffect(index, i.color, str * (rad - dist) / rad);
+                            SingleEffect(index, i.color, stre * (rad - dist) / rad);
                         }
                     break;
                 case BgrEffect.Type.Ring:
@@ -225,15 +200,15 @@ public class BackgroundSystem : MonoBehaviour
                     int minX = 2 + i.memIndex * 4;
                     if( i.type == BgrEffect.Type.Focus)
                     {
-                        str = i.strength * (i.phase) * (i.phase);
+                        stre = i.strength * (i.phase) * (i.phase);
                         rad = i.radius * Mathf.Pow(1F - i.phase, 1.3F);
                     }
                     else
                     {
-                        str = i.strength * (1F - i.phase) * (1F - i.phase);
+                        stre = i.strength * (1F - i.phase) * (1F - i.phase);
                         rad = i.radius * Mathf.Pow(i.phase, 1.3F);
                     }
-                    float halfWidth = rad * 0.3F + 1F;
+                    halfWidth = rad * 0.3F + 1F;
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad * 1.6F + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad * 1.6F + 1) + 20F); x++)
                         for (int y = Mathf.FloorToInt(i.pos.y - (rad * 1.6F + 1) + 10F); y <= Mathf.FloorToInt(i.pos.y + (rad * 1.6F + 1) + 10F); y++)
                         {
@@ -249,22 +224,21 @@ public class BackgroundSystem : MonoBehaviour
                                 if (y <= 12 && y >= 7)
                                     continue;
                             }
-                            strRate = 0F;
+                            streRate = 0F;
                             foreach (var vec in EPS)
                             {
                                 dist = (i.pos - BlockCenterPos(index) - vec).magnitude;
                                 if (dist < rad + halfWidth && dist >= rad)
-                                    strRate += (rad + halfWidth - dist) / halfWidth;
+                                    streRate += (rad + halfWidth - dist) / halfWidth;
                                 if (dist < rad && dist > rad - halfWidth)
-                                    strRate += (dist - rad + halfWidth) / halfWidth;
+                                    streRate += (dist - rad + halfWidth) / halfWidth;
                             }
-                            strRate /= EPS.Length;
-                            SingleEffect(index, i.color, str * strRate);
+                            streRate /= EPS.Length;
+                            SingleEffect(index, i.color, stre * streRate);
                         }
                     break;
-                    break;
                 case BgrEffect.Type.OutSide:
-                    str = i.strength * Mathf.Min(1F, 3F * (1F - i.phase));
+                    stre = i.strength * Mathf.Min(1F, 3F * (1F - i.phase));
                     rad = i.radius * Mathf.Min(1F, 6F * (i.phase));
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad + 1) + 20F); x++)
                         for (int y = Mathf.FloorToInt(i.pos.y - (rad + 1) + 10F); y <= Mathf.FloorToInt(i.pos.y + (rad + 1) + 10F); y++)
@@ -273,14 +247,89 @@ public class BackgroundSystem : MonoBehaviour
                             if (InBoundary(index))
                                 continue;
                             dist = (i.pos - BlockCenterPos(index)).magnitude;
-                            //float noise = Noise(x, y) * 1.2f + 0.2f;
-                            float noise = 0.2f;
-                            if (x % 2 == 0)
-                                noise += 0.5f;
-                            if (y % 2 == 0)
-                                noise += 0.5f;
-                            float clamp = Mathf.Clamp01(5 * (rad - dist) / rad);
-                            SingleEffect(index, i.color, str * noise * clamp);
+                            float clamp = Mathf.Clamp01((rad - dist) / rad);
+                            SingleEffect(index, i.color, stre * clamp);
+                        }
+                    break;
+                case BgrEffect.Type.Boundary:
+                    /*
+                    stre = i.strength;// * Mathf.Min(1F, 3F * (1F - i.phase));
+                    FadingLine(new Vector2Int(9, 1), new Vector2Int(1, 0), i.color,stre * 0.7f, 0.97f);
+                    FadingLine(new Vector2Int(30, 18), new Vector2Int(-1, 0), i.color, stre * 0.7f, 0.97f);
+                    FadingLine(new Vector2Int(32, 3), new Vector2Int(0, 1), i.color, stre * 0.7f, 0.97f);
+                    FadingLine(new Vector2Int(7, 16), new Vector2Int(0, -1), i.color, stre * 0.7f, 0.97f);
+                    
+                    float rate = 0.4f;
+                    for(int y = 1;y>=0;y--)
+                    {
+                        FadingLine(new Vector2Int(8, y), new Vector2Int(1, 0), i.color, stre * rate);
+                        rate *= 0.8f;
+                    }
+                    rate = 0.4f;
+                    for (int y = 18; y <= 19; y++)
+                    {
+                        FadingLine(new Vector2Int(31, y), new Vector2Int(-1, 0), i.color, stre * rate);
+                        rate *= 0.8f;
+                    }
+                    rate = 0.4f;
+                    for (int x = 32; x <= 39; x++)
+                    {
+                        FadingLine(new Vector2Int(x, 2), new Vector2Int(0, 1), i.color, stre * rate);
+                        rate *= 0.9f;
+                    }
+                    rate = 0.4f;
+                    for (int x = 7; x >= 0; x--)
+                    {
+                        FadingLine(new Vector2Int(x, 17), new Vector2Int(0, -1), i.color, stre * rate);
+                        rate *= 0.9f;
+                    }
+                    
+                    for (int x = 0;x<40;x++)
+                        for(int y = 0;y<20;y++)
+                        {
+                            index = new Vector2Int(x, y);
+                            if (InBoundary(index))
+                                continue;
+                            dist = Mathf.Abs((float)x - 19.5f) + Mathf.Abs((float)y - 9.5f);
+                            streRate = 0.4f - 0.012f * dist;
+                            SingleEffect(index, i.color, stre * streRate);
+                        }
+                    */
+                    //float rPhase = (i.phase * 2f) - Mathf.Floor(i.phase * 2f);
+                    bStre = Mathf.Clamp01(i.phase * 8f);
+                    stre = i.strength * Mathf.Clamp01(2f * (1F - i.phase));
+                    rad = 20f * Mathf.Pow(i.phase, 1.3F) + 5f;
+                    halfWidth = rad * 0.35F + 1F;
+                    for (int x = 0; x < 40; x++)
+                        for (int y = 0; y < 20; y++)
+                        {
+                            index = new Vector2Int(x, y);
+                            if (InBoundary(index))
+                                continue;
+                            dist = Mathf.Abs((float)x - 19.5f) + Mathf.Abs((float)y - 9.5f);
+                            streRate = 0f;
+                            if (dist < rad + halfWidth && dist >= rad)
+                                streRate = (rad + halfWidth - dist) / halfWidth;
+                            if (dist < rad && dist > rad - halfWidth)
+                                streRate = (dist - rad + halfWidth) / halfWidth;
+                            streRate *= 0.7f;
+                            if (x >= 6 && x <= 33)
+                                streRate = 0.8f * bStre * (1f - streRate);
+                            else
+                                streRate *= bStre;
+                            SingleEffect(index, i.color, stre * streRate);
+                        }
+                    break;
+                case BgrEffect.Type.BoundaryWarning:
+                    stre = i.strength * Mathf.Clamp01(2f * (1F - i.phase));
+                    streRate = Mathf.Clamp01(i.phase * 6f);
+                    for (int x = 6; x < 34; x++)
+                        for (int y = 0; y < 20; y++)
+                        {
+                            index = new Vector2Int(x, y);
+                            if (InBoundary(index))
+                                continue;
+                            SingleEffect(index, i.color, stre * streRate);
                         }
                     break;
 
