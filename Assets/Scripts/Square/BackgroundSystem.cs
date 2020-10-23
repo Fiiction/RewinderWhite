@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class BgrEffect
 {
-    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing, Boundary, BoundaryWarning};
+    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing, Boundary, BoundaryCircle};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
@@ -78,6 +78,10 @@ public class BackgroundSystem : MonoBehaviour
     {
         return (i.x >= 8 && i.x <= 31 && i.y >= 2 && i.y <= 17);
     }
+    static public bool OnBoundary(Vector2Int i)
+	{
+        return (!InBoundary(i)) && i.x>= 7 && i.x <= 32 && i.y>=1 && i.y<=18;
+	}
     static public bool InScreen(Vector2Int i)
     {
         return (i.x >= 0 && i.x <= 39 && i.y >= 0 && i.y <= 19);
@@ -238,6 +242,7 @@ public class BackgroundSystem : MonoBehaviour
                         }
                     break;
                 case BgrEffect.Type.OutSide:
+                case BgrEffect.Type.BoundaryCircle:
                     stre = i.strength * Mathf.Min(1F, 3F * (1F - i.phase));
                     rad = i.radius * Mathf.Min(1F, 6F * (i.phase));
                     for (int x = Mathf.FloorToInt(i.pos.x - (rad + 1) + 20F); x <= Mathf.FloorToInt(i.pos.x + (rad + 1) + 20F); x++)
@@ -246,90 +251,34 @@ public class BackgroundSystem : MonoBehaviour
                             index = new Vector2Int(x, y);
                             if (InBoundary(index))
                                 continue;
+                            if (i.type == BgrEffect.Type.BoundaryCircle && !OnBoundary(index))
+                                continue;
                             dist = (i.pos - BlockCenterPos(index)).magnitude;
                             float clamp = Mathf.Clamp01((rad - dist) / rad);
                             SingleEffect(index, i.color, stre * clamp);
                         }
                     break;
                 case BgrEffect.Type.Boundary:
-                    /*
-                    stre = i.strength;// * Mathf.Min(1F, 3F * (1F - i.phase));
-                    FadingLine(new Vector2Int(9, 1), new Vector2Int(1, 0), i.color,stre * 0.7f, 0.97f);
-                    FadingLine(new Vector2Int(30, 18), new Vector2Int(-1, 0), i.color, stre * 0.7f, 0.97f);
-                    FadingLine(new Vector2Int(32, 3), new Vector2Int(0, 1), i.color, stre * 0.7f, 0.97f);
-                    FadingLine(new Vector2Int(7, 16), new Vector2Int(0, -1), i.color, stre * 0.7f, 0.97f);
-                    
-                    float rate = 0.4f;
-                    for(int y = 1;y>=0;y--)
-                    {
-                        FadingLine(new Vector2Int(8, y), new Vector2Int(1, 0), i.color, stre * rate);
-                        rate *= 0.8f;
-                    }
-                    rate = 0.4f;
-                    for (int y = 18; y <= 19; y++)
-                    {
-                        FadingLine(new Vector2Int(31, y), new Vector2Int(-1, 0), i.color, stre * rate);
-                        rate *= 0.8f;
-                    }
-                    rate = 0.4f;
-                    for (int x = 32; x <= 39; x++)
-                    {
-                        FadingLine(new Vector2Int(x, 2), new Vector2Int(0, 1), i.color, stre * rate);
-                        rate *= 0.9f;
-                    }
-                    rate = 0.4f;
-                    for (int x = 7; x >= 0; x--)
-                    {
-                        FadingLine(new Vector2Int(x, 17), new Vector2Int(0, -1), i.color, stre * rate);
-                        rate *= 0.9f;
-                    }
-                    
-                    for (int x = 0;x<40;x++)
-                        for(int y = 0;y<20;y++)
-                        {
-                            index = new Vector2Int(x, y);
-                            if (InBoundary(index))
-                                continue;
-                            dist = Mathf.Abs((float)x - 19.5f) + Mathf.Abs((float)y - 9.5f);
-                            streRate = 0.4f - 0.012f * dist;
-                            SingleEffect(index, i.color, stre * streRate);
-                        }
-                    */
-                    //float rPhase = (i.phase * 2f) - Mathf.Floor(i.phase * 2f);
                     bStre = Mathf.Clamp01(i.phase * 8f);
                     stre = i.strength * Mathf.Clamp01(2f * (1F - i.phase));
-                    rad = 20f * Mathf.Pow(i.phase, 1.3F) + 5f;
-                    halfWidth = rad * 0.35F + 1F;
+                    rad = 20f * Mathf.Pow(i.phase, 1.3F) + 0f;
+                    halfWidth = rad * 0.5F + 4F;
                     for (int x = 0; x < 40; x++)
                         for (int y = 0; y < 20; y++)
                         {
                             index = new Vector2Int(x, y);
-                            if (InBoundary(index))
-                                continue;
-                            dist = Mathf.Abs((float)x - 19.5f) + Mathf.Abs((float)y - 9.5f);
-                            streRate = 0f;
-                            if (dist < rad + halfWidth && dist >= rad)
-                                streRate = (rad + halfWidth - dist) / halfWidth;
-                            if (dist < rad && dist > rad - halfWidth)
-                                streRate = (dist - rad + halfWidth) / halfWidth;
-                            streRate *= 0.7f;
-                            if (x >= 6 && x <= 33)
-                                streRate = 0.8f * bStre * (1f - streRate);
-                            else
-                                streRate *= bStre;
-                            SingleEffect(index, i.color, stre * streRate);
-                        }
-                    break;
-                case BgrEffect.Type.BoundaryWarning:
-                    stre = i.strength * Mathf.Clamp01(2f * (1F - i.phase));
-                    streRate = Mathf.Clamp01(i.phase * 6f);
-                    for (int x = 6; x < 34; x++)
-                        for (int y = 0; y < 20; y++)
-                        {
-                            index = new Vector2Int(x, y);
-                            if (InBoundary(index))
-                                continue;
-                            SingleEffect(index, i.color, stre * streRate);
+                            if (OnBoundary(index))
+							{
+                                dist = Mathf.Abs((float)x - 19.5f) + Mathf.Abs((float)y - 9.5f);
+                                streRate = 0f;
+                                if (dist < rad + halfWidth && dist >= rad)
+                                    streRate = (rad + halfWidth - dist) / halfWidth;
+                                if (dist < rad && dist > rad - halfWidth)
+                                    streRate = (dist - rad + halfWidth) / halfWidth;
+                                streRate *= 0.7f;
+                                streRate = 1.1f * bStre * (1f - 1.5f * streRate);
+                                SingleEffect(index, i.color, stre * streRate);
+                            }
                         }
                     break;
 

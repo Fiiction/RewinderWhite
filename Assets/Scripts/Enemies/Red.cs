@@ -12,6 +12,7 @@ public class Red : MonoBehaviour {
     float lifeTime = 0F;
     bool inScreen = false, expelled = false;
     float startTime;
+    int basicStrength;
 
     public void Set()
     {
@@ -22,7 +23,8 @@ public class Red : MonoBehaviour {
         tar *= 2f;
         vel = (tar - transform.position).normalized;
         inScreen = false;
-        EC.strength++;
+        basicStrength = EC.strength;
+        EC.strength = basicStrength + 2;
     }
 
     // Use this for initialization
@@ -53,7 +55,7 @@ public class Red : MonoBehaviour {
         vel = (EC.player.transform.position - transform.position).normalized;
         if(inScreen)
         {
-            var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.83F));
+            var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 8F, 0.6F, (Vector2)(transform.position * 0.83F));
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
@@ -75,7 +77,8 @@ public class Red : MonoBehaviour {
         }
         else if (OutOfBound())
             {
-                EC.strength--;
+                if(EC.strength > basicStrength)
+                    EC.strength --;
                 Rebound();
             }
 
