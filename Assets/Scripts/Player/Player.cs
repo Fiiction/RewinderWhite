@@ -109,7 +109,7 @@ public class Player : MonoBehaviour
         if (Time.time <= lastTouchBoundaryTime + 5F)
             return;
         lastBoundaryWarningTime = Time.time;
-        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.5F, 12F, 2.4F, (Vector2)(transform.position * 0.78F));
+        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.42F, 12F, 2.4F, (Vector2)(transform.position * 0.78F));
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
 
@@ -120,7 +120,7 @@ public class Player : MonoBehaviour
         if (Time.time <= lastTouchBoundaryTime + 1.6F)
             return;
         lastTouchBoundaryTime = Time.time;
-        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.5F, 12F, 2.4F, (Vector2)(transform.position * 0.78F));
+        var be = new BgrEffect(BgrEffect.Type.Boundary, Color.black, 0.42F, 12F, 2.4F, (Vector2)(transform.position * 0.78F));
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
     void Move()
@@ -175,7 +175,7 @@ public class Player : MonoBehaviour
             deltaPos.y = 0;
             TouchBoundary();
         }
-        if (Mathf.Abs(transform.position.y) > YMAX - 2.4F || Mathf.Abs(transform.position.x) > XMAX - 2.4F)
+        if (Mathf.Abs(transform.position.y) > YMAX - 2.8F || Mathf.Abs(transform.position.x) > XMAX - 2.8F)
             BoundaryWarning();
         transform.position = transform.position + (Vector3)deltaPos * Time.deltaTime;
     }

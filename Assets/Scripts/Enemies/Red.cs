@@ -55,7 +55,7 @@ public class Red : MonoBehaviour {
         vel = (EC.player.transform.position - transform.position).normalized;
         if(inScreen)
         {
-            var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 8F, 0.6F, (Vector2)(transform.position * 0.83F));
+            var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 10F, 0.6F, (Vector2)(transform.position * 0.83F));
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
