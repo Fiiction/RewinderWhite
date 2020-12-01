@@ -24,6 +24,7 @@ public class GameSystem : MonoBehaviour
     bool endingDelay = false;
     public GameObject PlayerObj;
     public bool autoKillEnemy = false;
+    public float tension = 0f;
     public Vector3 PlayerPos()
     {
         if (PlayerObj)

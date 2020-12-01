@@ -99,6 +99,8 @@ MonoBehaviour:
   waveS: 0.2
   waveL: 0.8
   waveR: 12
+  killAudioName: r
+  isKillAudioMainLoop: 1
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
 --- !u!114 &8627194482217396964

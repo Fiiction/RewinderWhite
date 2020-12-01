@@ -41,7 +41,9 @@ public class EnemyController : MonoBehaviour
     public float waveS = 0.15F;
     public float waveL = 1.0F;
     public float waveR = 9.0F;
-
+    [Header("Audio When Killing Others")]
+    public string killAudioName = "";
+    public bool isKillAudioMainLoop = false;
     public Vector2 lastFramePos,vec;
     public void Kill(bool scoring = true)
     {
@@ -105,7 +107,16 @@ public class EnemyController : MonoBehaviour
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
-
+    void PlayKillAudio()
+    {
+        if (killAudioName != "")
+        {
+            if (isKillAudioMainLoop)
+                FindObjectOfType<AudioSystem>().PlayMainLoop(killAudioName);
+            else
+                FindObjectOfType<AudioSystem>().PlayAudio(killAudioName, AudioSystem.LoopType.Random);
+        }
+    }
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (timeAlive < 0.5F)
@@ -114,6 +125,7 @@ public class EnemyController : MonoBehaviour
         {
             FindObjectOfType<GameSystem>().killColor = color;
             collision.gameObject.GetComponent<Player>().Kill();
+            PlayKillAudio();
         }
         if (collision.gameObject.tag == "Enemy")
         {
@@ -122,13 +134,10 @@ public class EnemyController : MonoBehaviour
                 return;
             if(c.timeAlive < 0.5F)
                 return;
-            if (c.strength < strength)
+            if (c.strength < strength || (c.strength == strength && killEqual))
             {
                 c.Kill();
-            }
-            if (c.strength == strength && killEqual)
-            {
-                c.Kill();
+                PlayKillAudio();
             }
         }
     }

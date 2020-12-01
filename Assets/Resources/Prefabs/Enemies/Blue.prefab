@@ -99,6 +99,8 @@ MonoBehaviour:
   waveS: 0.2
   waveL: 1.4
   waveR: 9
+  killAudioName: absorb
+  isKillAudioMainLoop: 0
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
 --- !u!114 &-7535677736085261833
@@ -115,3 +117,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gPower: 16
   speed: 2.4
+  dist: 0

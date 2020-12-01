@@ -9,6 +9,7 @@ public class Generator : MonoBehaviour
     public GameObject Orange, Red, Blue, Inflater, Green, debugText, scoreText;
     float nextBlue, nextInflater, nextGreen;
     float startTime;
+    float tension = 0f, basicTension = 7f;
     GameSystem GS;
 
     float SpeedMultiplier()
@@ -189,5 +190,13 @@ public class Generator : MonoBehaviour
         if (!GS.Gaming())
             Destroy(gameObject);
         Generate();
+        tension = (redCnt * 1.5f + orangeCnt)/basicTension - 0.5f;
+        tension = Mathf.Clamp01(tension);
+        if (tension >= 0.8f)
+            basicTension += (tension - 0.8f) * 0.8f * Time.deltaTime;
+        if (tension <= 0.15f)
+            basicTension -= (0.15f - tension) * 0.8f * Time.deltaTime;
+        GS.tension = (Mathf.Sin((tension - 0.5f) * Mathf.PI) + 1f) / 2f;
+        //Debug.Log(GS.tension);
     }
 }

@@ -87,15 +87,20 @@ MonoBehaviour:
   killEqual: 1
   scoreRate: 1
   player: {fileID: 0}
+  timeAlive: 0
   color: {r: 0.52156866, g: 0.6901961, b: 0.5921569, a: 1}
-  tailLength: 1
+  _tailLength: 1
   lineWidth: 1
   lineLength: 1
+  isBossPart: 0
+  hasNoDrop: 0
   dripFreq: 0.2
   dripRad: 2.4
   waveS: 0.2
   waveL: 1.4
   waveR: 9
+  killAudioName: g
+  isKillAudioMainLoop: 1
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
 --- !u!114 &5917598807580688496
@@ -112,3 +117,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   angSpeed: 1.6
+  curAngle: -100
