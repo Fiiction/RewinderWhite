@@ -97,6 +97,8 @@ public class Inflator : MonoBehaviour
         SetState(State.Chase);
         StartCoroutine(CheckEnemiesCoroutine());
     }
+
+    Vector3 vec;
     void Move()
     {
         switch (state)
@@ -135,15 +137,14 @@ public class Inflator : MonoBehaviour
                 moveSpeed -= Mathf.Clamp(moveSpeed - 1F, 0F, 4F) * Time.deltaTime * 1.1F;
                 radMultiplier += Mathf.Clamp(1F - radMultiplier, 0F, 0.5F) * Time.deltaTime * 0.5F;
 
-                Vector3 v;
-                if(GS.bossHealth > 1F)
-                    v = PL.transform.position - transform.position;
+                if(GS.bossHealth > 1F && PL)
+                    this.vec = PL.transform.position - transform.position;
                 else
                 {
                     endingChase = true;
-                    v = -transform.position;
+                    this.vec = -transform.position;
                 }
-                float ang = Mathf.Atan2(v.y, v.x);
+                float ang = Mathf.Atan2(this.vec.y, this.vec.x);
                 if (Mathf.Abs(ang - moveAngle) < 0.05F)
                     SetState(State.Chase);
                 break;
@@ -231,8 +232,8 @@ public class Inflator : MonoBehaviour
             transform.DetachChildren();
             Destroy(gameObject);
         }
-
-        playerIn = ((PL.transform.position - transform.position).magnitude < 0.2F * curRad);
+        if(PL)
+            playerIn = ((PL.transform.position - transform.position).magnitude < 0.2F * curRad);
         if (ending)
         {
             moveSpeed -= Mathf.Clamp(moveSpeed, 0F, 4F) * Time.deltaTime * 6F;
