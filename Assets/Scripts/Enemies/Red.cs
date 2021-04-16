@@ -14,8 +14,12 @@ public class Red : MonoBehaviour {
     float startTime;
     int basicStrength;
 
+    bool setted = false;
     public void Set()
     {
+        if (setted)
+            return;
+        setted = true;
         Vector3 tar = Vector3.zero;
         tar.x = transform.position.y;
         tar.y = -transform.position.x;

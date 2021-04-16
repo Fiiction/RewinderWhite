@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d50901098ff35846a8e9f8d5cdf4dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strength: 3
+  strength: 100
   killEqual: 0
   scoreRate: 1
   player: {fileID: 0}
@@ -99,6 +99,8 @@ MonoBehaviour:
   waveS: 0
   waveL: 0.8
   waveR: 12
+  killAudioName: 
+  isKillAudioMainLoop: 0
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
 --- !u!114 &1282870379279501648
