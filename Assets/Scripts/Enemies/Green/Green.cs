@@ -18,6 +18,7 @@ public class Green : MonoBehaviour
         EC.dripRad = 6F;
         damping = true;
         yield return new WaitForSeconds(1.5F);
+        FindObjectOfType<AudioSystem>().PlayAudio("flower", AudioSystem.LoopType.None);
         GameObject GB = Resources.Load<GameObject>("Prefabs/Enemies/Green/GreenBurst");
         GameObject gb = GameObject.Instantiate(GB, transform.position, Quaternion.identity);
         EC.Kill(false);

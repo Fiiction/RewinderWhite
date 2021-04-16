@@ -94,6 +94,7 @@ public class Player : MonoBehaviour
             return false;
         CurrentDrop.GetComponent<DropGraphics>().Fade();
         transform.position = rewindPos;
+        FindObjectOfType<AudioSystem>().PlayAudio("rewind", AudioSystem.LoopType.Random);
         StartCoroutine(RewindEffectCoroutine());
         stateQ.Clear();
         lastRewindTime = Time.time;

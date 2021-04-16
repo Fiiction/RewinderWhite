@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Blue : MonoBehaviour
 {
-    public float gPower = 30F, speed = 3F, dist;
+    public float gPower = 30F, speed = 3F, dist, totDist;
+    float phase;
+    AudioSource audioSource;
     Vector3 vel;
     EnemyController EC;
     GameObject fakeBlock;
@@ -51,7 +53,22 @@ public class Blue : MonoBehaviour
     void Start()
     {
         //Destroy(gameObject, transform.position.magnitude * 2F / speed);
+        string audioName = "";
+        if (transform.position.x > 1f)
+            audioName = "Audios/blackhole_right";
+        if (transform.position.x < -1f)
+            audioName = "Audios/blackhole_left";
+        if (transform.position.y > 1f)
+            audioName = "Audios/blackhole_up";
+        if (transform.position.y < -1f)
+            audioName = "Audios/blackhole_down";
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.volume = 0f;
+        audioSource.clip = Resources.Load<AudioClip>(audioName);
+        audioSource.Play();
+        phase = 0f;
         dist = transform.position.magnitude * 2F;
+        totDist = dist;
         vel = -transform.position.normalized * speed;
         EC = GetComponent<EnemyController>();
 
@@ -65,6 +82,9 @@ public class Blue : MonoBehaviour
         Gravite();
         transform.position += vel * Time.deltaTime;
         dist -= speed * Time.deltaTime;
+        phase = dist / totDist;
+        audioSource.volume = Mathf.Clamp(1.5f - 3f * Mathf.Abs(phase - 0.5f), 0f, 0.7f);
+        audioSource.panStereo = Mathf.Clamp(transform.position.x / 14f, -1f, 1f);
         if (dist <= 0F)
             EC.Kill();
     }

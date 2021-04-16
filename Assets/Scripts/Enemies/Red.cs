@@ -58,6 +58,7 @@ public class Red : MonoBehaviour {
             var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 10F, 0.6F, (Vector2)(transform.position * 0.83F));
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
+        FindObjectOfType<AudioSystem>().PlayMainLoop("w");
     }
 
     void Move()

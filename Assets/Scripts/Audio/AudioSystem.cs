@@ -152,9 +152,10 @@ public class AudioSystem : MonoBehaviour
             Index[i] = 0;
         Length["absorb"] = 4;
         Length["piano"] = 4;
-        Length["collision"] = 2;
+        Length["collision"] = 6;
+        Length["rewind"] = 4;
 
-        foreach(var i in Length)
+        foreach (var i in Length)
             Index[i.Key] = 0;
 
         StartCoroutine(TensionCoroutine());
