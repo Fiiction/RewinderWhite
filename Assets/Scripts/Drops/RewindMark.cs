@@ -12,10 +12,12 @@ public class RewindMark : MonoBehaviour
     public float tailLength = 0.91F;
     bool prevCan = false;
     GameObject HollowDrop;
+    GameSystem GS;
     DropGraphics hdg;
     // Start is called before the first frame update
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
         PL = GetComponentInParent<Player>();
         Vi = GetComponentInParent<Violet>();
         DG = GetComponentInChildren<DropGraphics>();
@@ -54,7 +56,7 @@ public class RewindMark : MonoBehaviour
                 alpha = -0.1F;
                 if (prevCan)
                 {
-                    transform.position = PL.transform.position;
+                    transform.position = GS.PlayerPos();
                 }
             }
             prevCan = PL.canRewind;

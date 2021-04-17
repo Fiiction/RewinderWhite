@@ -10,7 +10,7 @@ public class Green : MonoBehaviour
     Vector2 targetPos = Vector2.zero, vec = Vector2.zero;
     float burstTime;
     EnemyController EC;
-
+    GameSystem GS;
     IEnumerator GreenCoroutine()
     {
         yield return new WaitForSeconds(burstTime);
@@ -27,9 +27,9 @@ public class Green : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
         EC = GetComponent<EnemyController>();
-        if (EC.player)
-            targetPos = EC.player.transform.position;
+        targetPos = GS.PlayerPos();
         vec = (targetPos - (Vector2)transform.position).normalized * speed;
         burstTime = (targetPos - (Vector2)transform.position).magnitude / speed - 0.5F;
         StartCoroutine(GreenCoroutine());

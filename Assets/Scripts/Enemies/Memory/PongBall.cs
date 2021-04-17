@@ -11,7 +11,7 @@ public class PongBall : MonoBehaviour
     bool starting = true;
     EnemyController EC;
     BackgroundSystem BS;
-
+    GameSystem GS;
     IEnumerator StartReboundCoroutine()
     {
         yield return new WaitForSeconds(0.6F);
@@ -26,8 +26,9 @@ public class PongBall : MonoBehaviour
             return;
         lastVRTime = Time.time;
         vel.y = -vel.y;
-        var be = new BgrEffect(BgrEffect.Type.OutSide, EC.color, 0.5F, 8F, 0.6F, (Vector2)(transform.position * 0.85F));
+        var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 14F, 0.6F, (Vector2)(transform.position * 0.85F));
         BS.AddEffect(be);
+        FindObjectOfType<AudioSystem>().PlayMainLoop("g");
     }
 
     int reboundCnt;
@@ -38,20 +39,22 @@ public class PongBall : MonoBehaviour
         reboundCnt++;
         if (reboundCnt > 8 && speed <= 14F)
             speed *= 1.1F;
-        Vector2 targetPos = EC.player.transform.position;
+        Vector2 targetPos = GS.PlayerPos();
         if (targetPos.x > 10.6F)
             targetPos.x = 10.6F;
         if (targetPos.x < -10.6F)
             targetPos.x = -10.6F;
         vel = (targetPos - (Vector2)transform.position).normalized;
-        var be = new BgrEffect(BgrEffect.Type.Focus, EC.color, 0.7F, 5F, 0.6F, (Vector2)EC.player.transform.position);
+        var be = new BgrEffect(BgrEffect.Type.Focus, EC.color, 0.7F, 5F, 0.6F, (Vector2)GS.PlayerPos());
         BS.AddEffect(be);
+        FindObjectOfType<AudioSystem>().PlayMainLoop("w");
     }
 
 
     // Start is called before the first frame update
     void Start()
     {
+        GS = FindObjectOfType<GameSystem>();
         EC = GetComponent<EnemyController>();
         BS = FindObjectOfType<BackgroundSystem>();
         StartCoroutine(StartReboundCoroutine());
@@ -63,7 +66,7 @@ public class PongBall : MonoBehaviour
             return;
         transform.position += speed * (Vector3)vel * Time.deltaTime;
         if (vel == Vector2.zero && EC.player)
-            vel = (EC.player.transform.position - transform.position).normalized;
+            vel = (GS.PlayerPos() - transform.position).normalized;
     }
     // Update is called once per frame
     void Update()

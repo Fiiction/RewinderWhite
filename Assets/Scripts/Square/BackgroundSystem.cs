@@ -5,7 +5,9 @@ using DG.Tweening;
 
 public class BgrEffect
 {
-    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing, MemRing, Boundary, BoundaryCircle};
+    public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing,
+        MemRing, Boundary, BoundaryCircle,
+        CrossBomb};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
@@ -129,6 +131,7 @@ public class BackgroundSystem : MonoBehaviour
         MeteorEffects = new List<MeteorEffect>();
         Generate();
         AddEffect(new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 42F, 4F, Vector2.zero));
+        AddEffect(new BgrEffect(BgrEffect.Type.CrossBomb, new Color(0F, 1F, 0F), 0.8F, 16F, 3F, new Vector2(-8f, -4f)));
     }
 
     void SingleEffect(Vector2Int index, Color color, float stre)
@@ -281,7 +284,34 @@ public class BackgroundSystem : MonoBehaviour
                             }
                         }
                     break;
-
+                case BgrEffect.Type.CrossBomb:
+                    Vector2Int baseIndex = BlockIndex(i.pos - new Vector2(0.5f, 0.5f));
+                    for (int x = 0; x < 40; x++)
+                        for (int y = 0; y < 20; y++)
+                        {
+                            if ((x < baseIndex.x || x > baseIndex.x + 1) &&
+                                (y < baseIndex.y || y > baseIndex.y + 1))
+                                continue;
+                            index = new Vector2Int(x, y);
+                            dist = (i.pos - BlockCenterPos(index)).magnitude;
+                            if ((BlockCenterPos(index).x > i.pos.x) == (BlockCenterPos(index).y > i.pos.y))
+                                dist += 1.2f;
+                            //
+                            float eA = 0;
+                            float aDist = Mathf.Clamp01(i.phase / 0.7f) * i.radius;
+                            float aRate = Mathf.Clamp01((1.2f * aDist - dist) / (0.4f * aDist));
+                            float aStre = Mathf.Clamp01(Mathf.Min(i.phase * 5f, (0.7f - i.phase) * 3f));
+                            eA = aRate * aStre;
+                            //
+                            float eB = 0;
+                            float bLength = 40f * (1f - i.phase);
+                            float bDist = bLength - dist;
+                            if (bDist > 0f && bDist < 6f * Mathf.PI)
+                                eB = (1f - Mathf.Cos(bDist)) / 2f;
+                            eB *= Mathf.Clamp01(Mathf.Min(i.phase, (1f - i.phase) * 10f));
+                            SingleEffect(index, i.color, (eA + eB) * i.strength);
+                        }
+                    break;
             }
         }
 

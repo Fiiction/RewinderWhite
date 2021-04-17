@@ -12,7 +12,7 @@ public class Orange : MonoBehaviour {
     float lifeTime = 0F;
     float TargetAngle()
     {
-        Vector2 deltaPos = (Vector2)(EC.player.transform.position - transform.position);
+        Vector2 deltaPos = (Vector2)(GS.PlayerPos() - transform.position);
         float ret = Mathf.Atan2(deltaPos.y, deltaPos.x);
         return ret;
     }
@@ -32,16 +32,13 @@ public class Orange : MonoBehaviour {
     void Move()
     {
         float speedMultiplier = 1F, dist = 1F;
-        if (EC.player)
+        dist = ((Vector2)(GS.PlayerPos() - transform.position)).magnitude;
+        if (!shown && dist < 9F)
         {
-            dist = ((Vector2)(EC.player.transform.position - transform.position)).magnitude;
-            if (!shown && dist < 9F)
-            {
-                speedMultiplier = 1F - 0.25F * (9F - dist);
-                speedMultiplier = Mathf.Clamp01(speedMultiplier);
-            }
-            tar = TargetAngle();
+            speedMultiplier = 1F - 0.25F * (9F - dist);
+            speedMultiplier = Mathf.Clamp01(speedMultiplier);
         }
+        tar = TargetAngle();
         if (curAngle > tar + Mathf.PI)
             curAngle += angSpeed * Time.deltaTime;
         else if (curAngle > tar)

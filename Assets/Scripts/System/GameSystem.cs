@@ -25,12 +25,12 @@ public class GameSystem : MonoBehaviour
     public GameObject PlayerObj;
     public bool autoKillEnemy = false;
     public float tension = 0f;
+    Vector3 playerPos = Vector3.zero;
     public Vector3 PlayerPos()
     {
         if (PlayerObj)
-            return PlayerObj.transform.position;
-        else
-            return Vector3.zero;
+            playerPos = PlayerObj.transform.position;
+        return playerPos;
     }
 
     public void AddScore(float r)
@@ -86,7 +86,7 @@ public class GameSystem : MonoBehaviour
     {
         endingDelay = true;
         if (Gaming())
-            yield return new WaitForSeconds(0.0F);
+            yield return new WaitForSeconds(0.5F);
         endingDelay = false;
         state = State.None;
         var bs = FindObjectOfType<BackgroundSystem>();
@@ -98,9 +98,13 @@ public class GameSystem : MonoBehaviour
         else if(s == State.MemoryWinning)
         {
             bs.StartCoroutine(bs.SetBgrColorCoroutine(Color.black));
-            var pl = PlayerObj.GetComponent<Player>();
-            if (pl)
-                pl.Kill();
+            if(PlayerObj)
+            {
+                var pl = PlayerObj.GetComponent<Player>();
+                if (pl)
+                    pl.Kill();
+            }
+            
             yield return new WaitForSeconds(2F);
         }
         else
@@ -177,6 +181,9 @@ public class GameSystem : MonoBehaviour
                 score += Time.deltaTime * 10F;
 
         }
+        if (!Gaming())
+            tension = Mathf.Max(0f, tension - 0.3f * Time.deltaTime);
+
         if(state == State.MemoryLevel && bossHealth <=0F)
         {
             SetState(State.MemoryWinning);

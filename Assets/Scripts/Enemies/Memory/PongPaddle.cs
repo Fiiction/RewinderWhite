@@ -23,6 +23,8 @@ public class PongPaddle : MonoBehaviour
         {
             foreach (var i in manager.PongBallList)
             {
+                if (!i)
+                    continue;
                 float d = i.transform.position.x - transform.position.x;
                 float v = i.vel.x;
                 if (v * d >= 0F)

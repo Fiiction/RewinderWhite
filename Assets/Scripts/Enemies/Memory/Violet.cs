@@ -51,7 +51,7 @@ public class Violet : MonoBehaviour
 
     float TargetAngle()
     {
-        Vector2 deltaPos = (Vector2)(EC.player.transform.position - transform.position);
+        Vector2 deltaPos = (Vector2)(GS.PlayerPos() - transform.position);
         float ret = Mathf.Atan2(deltaPos.y, deltaPos.x);
         return ret;
 

@@ -40,7 +40,7 @@ public class Inflator : MonoBehaviour
                 else
                 {
                     if (!endingChase)
-                        chaseLength = (PL.transform.position - transform.position).magnitude + 6F;
+                        chaseLength = (GS.PlayerPos() - transform.position).magnitude + 6F;
                     else
                     {
                         chaseLength = transform.position.magnitude - 1F;
@@ -51,7 +51,7 @@ public class Inflator : MonoBehaviour
                 revolveCnt++;
                 firstChase = false;
                 spinDir = -spinDir;
-                Vector3 v = PL.transform.position - transform.position;
+                Vector3 v = GS.PlayerPos() - transform.position;
                 float ang = Mathf.Atan2(v.y, v.x);
                 float d = ang - moveAngle;
                 if (d > 0 && d < Mathf.PI)
@@ -138,7 +138,7 @@ public class Inflator : MonoBehaviour
                 radMultiplier += Mathf.Clamp(1F - radMultiplier, 0F, 0.5F) * Time.deltaTime * 0.5F;
 
                 if(GS.bossHealth > 1F && PL)
-                    this.vec = PL.transform.position - transform.position;
+                    this.vec = GS.PlayerPos() - transform.position;
                 else
                 {
                     endingChase = true;
@@ -233,7 +233,7 @@ public class Inflator : MonoBehaviour
             Destroy(gameObject);
         }
         if(PL)
-            playerIn = ((PL.transform.position - transform.position).magnitude < 0.2F * curRad);
+            playerIn = ((GS.PlayerPos() - transform.position).magnitude < 0.2F * curRad);
         if (ending)
         {
             moveSpeed -= Mathf.Clamp(moveSpeed, 0F, 4F) * Time.deltaTime * 6F;

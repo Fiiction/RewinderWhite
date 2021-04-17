@@ -51,12 +51,12 @@ public class Red : MonoBehaviour {
     {
         if (!EC.player || expelled)
             return;
-        if((transform.position - EC.player.transform.position).magnitude <= 5F)
+        if((transform.position - GS.PlayerPos()).magnitude <= 5F)
         {
             expelled = true;
             return;
         }
-        vel = (EC.player.transform.position - transform.position).normalized;
+        vel = (GS.PlayerPos() - transform.position).normalized;
         if(inScreen)
         {
             var be = new BgrEffect(BgrEffect.Type.BoundaryCircle, EC.color, 0.7F, 10F, 0.6F, (Vector2)(transform.position * 0.83F));

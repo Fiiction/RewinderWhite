@@ -21,7 +21,7 @@ public class BigRed : MonoBehaviour
 
     Color WarmColor()
     {
-        float h = Random.Range(0.96F, 1.16F);
+        float h = Random.Range(0.96F, 1.36F);
         if (h >= 1F)
             h -= 1F;
         return Color.HSVToRGB(h, 0.73F, 1F);
@@ -29,7 +29,7 @@ public class BigRed : MonoBehaviour
 
     Color ColdColor()
     {
-        float h = Random.Range(0.68F, 0.88F);
+        float h = Random.Range(0.48F, 0.88F);
         return Color.HSVToRGB(h, 0.59F, 0.5F);
     }
     Vector2 RandomBoundPos(float minL = 18F)
@@ -119,7 +119,7 @@ public class BigRed : MonoBehaviour
 
     float TargetAngle()
     {
-        Vector2 deltaPos = (Vector2)(EC.player.transform.position - transform.position);
+        Vector2 deltaPos = (Vector2)(GS.PlayerPos() - transform.position);
         float ret = Mathf.Atan2(deltaPos.y, deltaPos.x);
         return ret;
     }
