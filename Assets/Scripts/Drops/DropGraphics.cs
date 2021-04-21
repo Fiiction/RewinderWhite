@@ -28,7 +28,8 @@ public class DropGraphics : MonoBehaviour
                 UpdateColor();
         }
     }
-    float fadeRate = 1F,fadeSpeed = 1F;
+    float fadeRate = 1F;
+    public float fadeSpeed = 1F;
     bool fading = false;
     Vector2 fadeVec;
 
@@ -139,7 +140,7 @@ public class DropGraphics : MonoBehaviour
         {
             if(fadeRate > 0F)
             {
-                fadeRate -= Time.deltaTime * 1F;
+                fadeRate -= Time.deltaTime * fadeSpeed;
                 UpdateColor();
             }
         }

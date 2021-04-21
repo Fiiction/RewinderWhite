@@ -74,7 +74,7 @@ public class Snake : MonoBehaviour {
         if (GS.gameTime <= lastBiteTime + 0.5F)
             return;
         lastBiteTime = GS.gameTime;
-        GS.bossHealth -= HeadCnt() - o + 15F;
+        GS.DamageBoss(HeadCnt() - o + 15F);
         foreach (SnakeHead i in HeadList)
             if (i.index >= o)
                 i.GetComponent<EnemyController>().Kill();

@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour
     public float scoreRate;
     public Player player;
     public float timeAlive = 0F;
+    public float minKillTime = 0.5f;
     GameObject CurrentDrop, HollowDrop;
     DropGraphics dg, hdg;
     GameSystem GS;
@@ -119,7 +120,7 @@ public class EnemyController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (timeAlive < 0.5F)
+        if (timeAlive < minKillTime)
             return;
         if (collision.gameObject.tag == "Player")
         {
@@ -132,7 +133,7 @@ public class EnemyController : MonoBehaviour
             var c = collision.gameObject.GetComponent<EnemyController>();
             if (!c)
                 return;
-            if(c.timeAlive < 0.5F)
+            if(c.timeAlive < c.minKillTime)
                 return;
             if (c.strength < strength || (c.strength == strength && killEqual))
             {

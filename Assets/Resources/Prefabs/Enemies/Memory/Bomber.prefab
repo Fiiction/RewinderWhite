@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 5917598807580688503}
   - component: {fileID: 5917598807580688502}
   - component: {fileID: 5917598807580688497}
-  - component: {fileID: 5917598807580688496}
+  - component: {fileID: 1243762304142321629}
+  - component: {fileID: 2182772330560829207}
   m_Layer: 0
-  m_Name: Orange
+  m_Name: Bomber
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,7 +30,7 @@ Transform:
   m_GameObject: {fileID: 5917598807580688499}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 20, y: 20, z: 0}
-  m_LocalScale: {x: 1.6, y: 1.6, z: 1}
+  m_LocalScale: {x: 1.9, y: 1.9, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -51,9 +52,9 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!58 &5917598807580688502
 CircleCollider2D:
@@ -65,7 +66,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -83,27 +84,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d50901098ff35846a8e9f8d5cdf4dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strength: 1
-  killEqual: 1
-  scoreRate: 1
+  strength: 100
+  killEqual: 0
+  scoreRate: 0
   player: {fileID: 0}
   timeAlive: 0
-  color: {r: 0.52156866, g: 0.6901961, b: 0.5921569, a: 1}
+  minKillTime: 0.5
+  color: {r: 0.28235295, g: 0.5647059, b: 0.8470589, a: 1}
   _tailLength: 1
   lineWidth: 1
-  lineLength: 1
-  isBossPart: 0
+  lineLength: 1.25
+  isBossPart: 1
   hasNoDrop: 0
   dripFreq: 0.2
   dripRad: 2.4
   waveS: 0.2
   waveL: 1.4
   waveR: 9
-  killAudioName: g
-  isKillAudioMainLoop: 1
+  killAudioName: 
+  isKillAudioMainLoop: 0
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
---- !u!114 &5917598807580688496
+--- !u!114 &1243762304142321629
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,9 +114,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 5917598807580688499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94bc5e8e426a93a4b88f277efc1a1281, type: 3}
+  m_Script: {fileID: 11500000, guid: 27e09d85a50533346a72a8ce96fb241f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  angSpeed: 1.6
-  curAngle: -100
+  orangeCnt: 0
+  redCnt: 0
+  power: 1
+  growthPower: 1
+  orangeColor: {r: 0.82745105, g: 0.67058825, b: 0.47058827, a: 1}
+  redColor: {r: 0.65882355, g: 0.28235295, b: 0.28235295, a: 1}
+  startWhenDamaged: 1
+  startingGenerate: 1
+  generateRed: 1
+--- !u!114 &2182772330560829207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5917598807580688499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3045447a41180e40a609c8aca916a4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

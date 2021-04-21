@@ -26,7 +26,7 @@ public class PongManager : MonoBehaviour
             Destroy(LeftPaddle.gameObject, 1F);
             RightPaddle.Kill();
             Destroy(RightPaddle.gameObject, 1F);
-            GS.bossHealth -= 16.7F;
+            GS.DamageBoss(16.7f);
             if (GS.bossHealth <= 0F)
                 Destroy(gameObject);
         }

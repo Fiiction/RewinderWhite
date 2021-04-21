@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &5917598807580688499
+--- !u!1 &8627194482217396962
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,40 +8,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5917598807580688500}
-  - component: {fileID: 5917598807580688503}
-  - component: {fileID: 5917598807580688502}
-  - component: {fileID: 5917598807580688497}
-  - component: {fileID: 5917598807580688496}
-  m_Layer: 0
-  m_Name: Orange
+  - component: {fileID: 8627194482217396965}
+  - component: {fileID: 8627194482217396966}
+  - component: {fileID: 8627194482217396967}
+  - component: {fileID: 8627194482217396960}
+  - component: {fileID: -5569733174913230317}
+  m_Layer: 8
+  m_Name: CrossBomb
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5917598807580688500
+--- !u!4 &8627194482217396965
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917598807580688499}
+  m_GameObject: {fileID: 8627194482217396962}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20, y: 20, z: 0}
-  m_LocalScale: {x: 1.6, y: 1.6, z: 1}
+  m_LocalPosition: {x: -20, y: -20, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &5917598807580688503
+--- !u!50 &8627194482217396966
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917598807580688499}
+  m_GameObject: {fileID: 8627194482217396962}
   m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
@@ -51,17 +51,17 @@ Rigidbody2D:
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
-  m_Interpolate: 1
+  m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &5917598807580688502
+--- !u!58 &8627194482217396967
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917598807580688499}
+  m_GameObject: {fileID: 8627194482217396962}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -71,50 +71,49 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.32
---- !u!114 &5917598807580688497
+--- !u!114 &8627194482217396960
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917598807580688499}
+  m_GameObject: {fileID: 8627194482217396962}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7d50901098ff35846a8e9f8d5cdf4dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  strength: 1
-  killEqual: 1
+  strength: 100
+  killEqual: 0
   scoreRate: 1
   player: {fileID: 0}
   timeAlive: 0
-  color: {r: 0.52156866, g: 0.6901961, b: 0.5921569, a: 1}
-  _tailLength: 1
-  lineWidth: 1
-  lineLength: 1
-  isBossPart: 0
+  minKillTime: 0.5
+  color: {r: 0.5647059, g: 0.75294125, b: 0.8470589, a: 1}
+  _tailLength: 0
+  lineWidth: 0
+  lineLength: 0
+  isBossPart: 1
   hasNoDrop: 0
-  dripFreq: 0.2
-  dripRad: 2.4
-  waveS: 0.2
-  waveL: 1.4
-  waveR: 9
-  killAudioName: g
-  isKillAudioMainLoop: 1
+  dripFreq: 0.4
+  dripRad: 4.5
+  waveS: 0
+  waveL: 0
+  waveR: 0
+  killAudioName: 
+  isKillAudioMainLoop: 0
   lastFramePos: {x: 0, y: 0}
   vec: {x: 0, y: 0}
---- !u!114 &5917598807580688496
+--- !u!114 &-5569733174913230317
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5917598807580688499}
+  m_GameObject: {fileID: 8627194482217396962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94bc5e8e426a93a4b88f277efc1a1281, type: 3}
+  m_Script: {fileID: 11500000, guid: 18ae17a381eec0d449d4131400ab4aac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  angSpeed: 1.6
-  curAngle: -100
+  color: {r: 0.5647059, g: 0.75294125, b: 0.8470589, a: 1}

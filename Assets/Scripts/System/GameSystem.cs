@@ -69,6 +69,9 @@ public class GameSystem : MonoBehaviour
             case 5:
                 break;
             case 6:
+                GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/Memory/Bomber")
+             , new Vector3(-31F, 6F), Quaternion.identity);
+                autoKillEnemy = true;
                 break;
             case 7:
                 GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/Memory/Violet")
@@ -164,21 +167,29 @@ public class GameSystem : MonoBehaviour
         ScoreText = GameObject.Find("ScoreText").GetComponent<Text>();
         TimeText = GameObject.Find("TimeText").GetComponent<Text>();
     }
-
+    public void DamageBoss(float dmg)
+    {
+        if (state != State.MemoryLevel)
+            return;
+        bossHealth -= dmg;
+        score = maxBossHealth - bossHealth;
+        if (bossHealth <= 0f)
+        {
+            bossHealth = 0f;
+            score = maxBossHealth;
+            SetState(State.MemoryWinning);
+        }
+    }
     // Update is called once per frame
     void Update()
     {
         if(Gaming() && !endingDelay)
         {
             gameTime += Time.deltaTime;
-            if (state == State.MemoryLevel)
+            if (state != State.MemoryLevel)
             {
-                score = maxBossHealth - bossHealth;
-                if (score > maxBossHealth)
-                    score = maxBossHealth;
-            }
-            else
                 score += Time.deltaTime * 10F;
+            }
 
         }
         if (!Gaming())

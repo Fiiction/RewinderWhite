@@ -7,7 +7,7 @@ public class BgrEffect
 {
     public enum Type { Single, Circle, Focus, Ring, OutSide, InnerRing, OuterRing,
         MemRing, Boundary, BoundaryCircle,
-        CrossBomb};
+        CrossBomb, CrossCircle};
     public Type type;
     public Color color;
     public float strength, radius, life,startTime,phase;
@@ -131,7 +131,6 @@ public class BackgroundSystem : MonoBehaviour
         MeteorEffects = new List<MeteorEffect>();
         Generate();
         AddEffect(new BgrEffect(BgrEffect.Type.Ring, new Color(0.8F, 0.8F, 0.8F), 0.8F, 42F, 4F, Vector2.zero));
-        AddEffect(new BgrEffect(BgrEffect.Type.CrossBomb, new Color(0F, 1F, 0F), 0.8F, 16F, 3F, new Vector2(-8f, -4f)));
     }
 
     void SingleEffect(Vector2Int index, Color color, float stre)
@@ -204,6 +203,7 @@ public class BackgroundSystem : MonoBehaviour
                 case BgrEffect.Type.InnerRing:
                 case BgrEffect.Type.OuterRing:
                 case BgrEffect.Type.MemRing:
+                case BgrEffect.Type.CrossCircle:
                     int minX = 2 + i.memIndex * 4;
                     if( i.type == BgrEffect.Type.Focus)
                     {
@@ -229,6 +229,13 @@ public class BackgroundSystem : MonoBehaviour
                                 if (x < minX || x > minX + 3)
                                     continue;
                                 if (y <= 12 && y >= 7)
+                                    continue;
+                            }
+                            if(i.type == BgrEffect.Type.CrossCircle)
+                            {
+                                Vector2Int bIndex = BlockIndex(i.pos - new Vector2(0.5f, 0.5f));
+                                if ((x < bIndex.x || x > bIndex.x + 1) &&
+                                    (y < bIndex.y || y > bIndex.y + 1))
                                     continue;
                             }
                             streRate = 0F;
@@ -298,9 +305,9 @@ public class BackgroundSystem : MonoBehaviour
                                 dist += 1.2f;
                             //
                             float eA = 0;
-                            float aDist = Mathf.Clamp01(i.phase / 0.7f) * i.radius;
+                            float aDist = Mathf.Clamp01(i.phase / 0.4f) * i.radius;
                             float aRate = Mathf.Clamp01((1.2f * aDist - dist) / (0.4f * aDist));
-                            float aStre = Mathf.Clamp01(Mathf.Min(i.phase * 5f, (0.7f - i.phase) * 3f));
+                            float aStre = Mathf.Clamp01(Mathf.Min(i.phase * 22f, (0.7f - i.phase) * 3f));
                             eA = aRate * aStre;
                             //
                             float eB = 0;

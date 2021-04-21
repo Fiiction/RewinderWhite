@@ -24,7 +24,7 @@ public class Violet : MonoBehaviour
     {
         if (!canRewind)
         {
-            GS.bossHealth -= 10;
+            GS.DamageBoss(10f);
             if(GS.bossHealth >= 20)
             {
                 var obj = GameObject.Instantiate(VioletPrefab, basicPos, Quaternion.identity);

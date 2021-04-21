@@ -157,9 +157,9 @@ public class Inflator : MonoBehaviour
     public void Damage()
     {
         if (playerIn)
-            GS.bossHealth -= Mathf.Min(4F,GS.bossHealth-1F);
+            GS.DamageBoss( Mathf.Min(4F,GS.bossHealth-1F));
         else
-            GS.bossHealth -= Mathf.Min(8F, GS.bossHealth - 1F);
+            GS.DamageBoss(Mathf.Min(8F, GS.bossHealth - 1F));
     }
 
     IEnumerator EndingCoroutine()
@@ -199,7 +199,7 @@ public class Inflator : MonoBehaviour
         foreach (var i in ElemStack)
             i.Kill();
         yield return new WaitForSeconds(0.8F);
-        GS.bossHealth = 0F;
+        GS.DamageBoss(100f);
     }
     int endingPhase = 1;
     // Update is called once per frame

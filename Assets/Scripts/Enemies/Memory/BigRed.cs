@@ -244,7 +244,7 @@ public class BigRed : MonoBehaviour
             var c = collision.gameObject.GetComponent<EnemyController>();
             if (c.timeAlive < 0.5F)
                 return;
-            GS.bossHealth -= 5F;
+            GS.DamageBoss(5f);
         }
     }
 

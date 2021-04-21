@@ -20,6 +20,8 @@ public class JoyStickController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Plate = transform.Find("Plate").gameObject;
+        //Stick = transform.Find("Stick").gameObject;
         touching = false;
         curVec = Vector3.zero;
         platePos = defaultPos;
