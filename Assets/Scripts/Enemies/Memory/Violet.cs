@@ -36,6 +36,7 @@ public class Violet : MonoBehaviour
         }
         else
         {
+            FindObjectOfType<AudioSystem>().PlayAudio("rewind_boss", AudioSystem.LoopType.Random);
             var obj = GameObject.Instantiate(VioletPrefab, rewindPos, Quaternion.identity);
             obj.GetComponent<Violet>().starting = false;
             obj.GetComponent<Violet>().basicPos = basicPos;

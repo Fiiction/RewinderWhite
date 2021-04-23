@@ -7,6 +7,7 @@ public class UIMemoryLevelButton : MonoBehaviour
 {
     GameSystem GS;
     public int index;
+    public string audio;
     Image im;
     float alpha = 0;
     // Start is called before the first frame update
@@ -24,6 +25,8 @@ public class UIMemoryLevelButton : MonoBehaviour
         if (GS.state == GameSystem.State.Memory)
         {
             GS.SetState(GameSystem.State.MemoryLevel, index);
+            if (audio != "")
+                FindObjectOfType<AudioSystem>().PlayAudio(audio);
         }
     }
 

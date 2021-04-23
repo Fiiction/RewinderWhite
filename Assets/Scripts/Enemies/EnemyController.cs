@@ -60,6 +60,10 @@ public class EnemyController : MonoBehaviour
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
         if(scoring)
             FindObjectOfType<GameSystem>().AddScore(scoreRate);
+
+        if(GS.state == GameSystem.State.MemoryLevel)
+            PlayKillAudio();
+
         Destroy(gameObject);
     }
 

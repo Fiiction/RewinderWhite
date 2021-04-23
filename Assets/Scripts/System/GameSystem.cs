@@ -26,6 +26,7 @@ public class GameSystem : MonoBehaviour
     public bool autoKillEnemy = false;
     public float tension = 0f;
     Vector3 playerPos = Vector3.zero;
+    AudioSystem AS;
     public Vector3 PlayerPos()
     {
         if (PlayerObj)
@@ -37,7 +38,7 @@ public class GameSystem : MonoBehaviour
     {
         if (!Gaming())
             return;
-        if (state == State.Memory)
+        if (state == State.MemoryLevel)
             return;
         scoreCnt++;
         score += r * scoreCnt;
@@ -87,6 +88,8 @@ public class GameSystem : MonoBehaviour
 
     IEnumerator SetStateCoroutine(State s)
     {
+        if (s == state || state == State.None || endingDelay)
+            yield break;
         endingDelay = true;
         if (Gaming())
             yield return new WaitForSeconds(0.5F);
@@ -95,11 +98,13 @@ public class GameSystem : MonoBehaviour
         var bs = FindObjectOfType<BackgroundSystem>();
         if (s == State.Ending)
         {
+            AS.PlayAudio("ending");
             bs.StartCoroutine(bs.SetBgrColorCoroutine(killColor));
             yield return new WaitForSeconds(2F);
         }
         else if(s == State.MemoryWinning)
         {
+            AS.PlayAudio("winning");
             bs.StartCoroutine(bs.SetBgrColorCoroutine(Color.black));
             if(PlayerObj)
             {
@@ -166,12 +171,14 @@ public class GameSystem : MonoBehaviour
         gameTime = score = 0F;
         ScoreText = GameObject.Find("ScoreText").GetComponent<Text>();
         TimeText = GameObject.Find("TimeText").GetComponent<Text>();
+        AS = FindObjectOfType<AudioSystem>();
     }
     public void DamageBoss(float dmg)
     {
         if (state != State.MemoryLevel)
             return;
         bossHealth -= dmg;
+        AS.PlayAudio("bosshurt", AudioSystem.LoopType.Loop, memoryLevelIndex == 6 ? 0.2f : 1f);
         score = maxBossHealth - bossHealth;
         if (bossHealth <= 0f)
         {

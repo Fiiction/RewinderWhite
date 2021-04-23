@@ -45,7 +45,12 @@ public class AudioSystem : MonoBehaviour
         if (branchName != "")
             path += "_" + branchName;
         if (index > 0)
-            path += "_" + index.ToString();
+        {
+            if (Length[loopName] >= 10)
+                path += "_" + index.ToString("D2");
+            else
+                path += "_" + index.ToString();
+        }
         Debug.Log("Try: " + path);
         return path;
     }
@@ -152,8 +157,10 @@ public class AudioSystem : MonoBehaviour
             Index[i] = 0;
         Length["absorb"] = 4;
         Length["piano"] = 4;
-        Length["collision"] = 6;
+        Length["collision"] = 16;
+        Length["bosshurt"] = 16;
         Length["rewind"] = 4;
+        Length["rewind_boss"] = 4;
 
         foreach (var i in Length)
             Index[i.Key] = 0;

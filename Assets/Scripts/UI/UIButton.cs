@@ -7,6 +7,9 @@ public class UIButton : MonoBehaviour
 {
     public GameSystem.State curState, toState;
     public bool retry = false;
+    public string audio = "";
+    public bool isReturn = false;
+    public bool isTitle = false;
     GameSystem GS;
     Image im;
     float alpha = 0;
@@ -21,13 +24,14 @@ public class UIButton : MonoBehaviour
 
     public void OnClick()
     {
-        Debug.Log(gameObject.name + ": " + GS.state);
         if (GS.state == curState)
         {
             if (retry)
                 GS.SetState(GS.lastGameState);
             else
                 GS.SetState(toState);
+            if (audio != "")
+                FindObjectOfType<AudioSystem>().PlayAudio(audio);
         }
     }
 
@@ -41,7 +45,15 @@ public class UIButton : MonoBehaviour
                 alpha += Time.deltaTime / GS.stateChangeTime;
                 im.color = new Color(1, 1, 1, alpha);
             }
-            im.raycastTarget = true;
+            if(alpha > 0.6f)
+                im.raycastTarget = true;
+            if(Input.GetKeyDown(KeyCode.Return))
+			{
+                if (isReturn)
+                    OnClick();
+                if (isTitle)
+                    Application.Quit();
+			}
         }
         else
         {
