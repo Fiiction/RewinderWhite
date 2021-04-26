@@ -189,11 +189,11 @@ public class Bomber : MonoBehaviour
             if (!c)
                 return;
             if(GS.bossHealth > 60f)
-                GS.DamageBoss(1f);
+                GS.DamageBoss(0.8f);
             else if (GS.bossHealth > 30f)
-                GS.DamageBoss(0.5f);
+                GS.DamageBoss(0.6f);
             else
-                GS.DamageBoss(0.25f);
+                GS.DamageBoss(0.4f);
 
 
         }

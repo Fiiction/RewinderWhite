@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Violet : MonoBehaviour
-{    
+{
+    public static int cnt;
+    public bool isRightOne;
     public float speed, angSpeed;
     public float rewindTime = 2F;
     public Color color;
@@ -36,7 +38,9 @@ public class Violet : MonoBehaviour
         }
         else
         {
-            FindObjectOfType<AudioSystem>().PlayAudio("rewind_boss", AudioSystem.LoopType.Random);
+            Debug.Log(isRightOne?"Right":"Left");
+            //Debug.Break();
+            FindObjectOfType<AudioSystem>().PlayAudio("rewind_boss", AudioSystem.LoopType.Random, 0.5f, isRightOne?1f:-1f);
             var obj = GameObject.Instantiate(VioletPrefab, rewindPos, Quaternion.identity);
             obj.GetComponent<Violet>().starting = false;
             obj.GetComponent<Violet>().basicPos = basicPos;
@@ -62,6 +66,8 @@ public class Violet : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        cnt++;
+        isRightOne = (cnt % 2) == 0;
         VioletPrefab = Resources.Load<GameObject>("Prefabs/Enemies/Memory/Violet");
         EffectPrefab = Resources.Load<GameObject>("Prefabs/Enemies/Memory/VioletRewindEffect");
         GS = FindObjectOfType<GameSystem>();

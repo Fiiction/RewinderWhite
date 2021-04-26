@@ -63,11 +63,15 @@ public class GameSystem : MonoBehaviour
              , new Vector3(-36F, 6F), Quaternion.identity);
                 break;
             case 4:
+                // In Progress...........
                 GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/Memory/Snake")
              , new Vector3(-24F, 6F), Quaternion.identity);
                 autoKillEnemy = true;
                 break;
             case 5:
+                GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/Memory/Snake")
+             , new Vector3(-24F, 6F), Quaternion.identity);
+                autoKillEnemy = true;
                 break;
             case 6:
                 GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Enemies/Memory/Bomber")
@@ -92,7 +96,10 @@ public class GameSystem : MonoBehaviour
             yield break;
         endingDelay = true;
         if (Gaming())
+        {
             yield return new WaitForSeconds(0.5F);
+            AS.FadeAllPianos();
+        }
         endingDelay = false;
         state = State.None;
         var bs = FindObjectOfType<BackgroundSystem>();

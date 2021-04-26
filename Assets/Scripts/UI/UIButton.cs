@@ -47,13 +47,14 @@ public class UIButton : MonoBehaviour
             }
             if(alpha > 0.6f)
                 im.raycastTarget = true;
-            if(Input.GetKeyDown(KeyCode.Return))
-			{
-                if (isReturn)
-                    OnClick();
-                if (isTitle)
-                    Application.Quit();
+            if(isReturn && Input.GetKeyDown(KeyCode.Escape))
+            {
+                OnClick();
 			}
+            if(isTitle && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Home)))
+            {
+                Application.Quit();
+            }
         }
         else
         {

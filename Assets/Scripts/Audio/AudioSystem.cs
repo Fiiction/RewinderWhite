@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class AudioSystem : MonoBehaviour
 {
@@ -54,11 +55,11 @@ public class AudioSystem : MonoBehaviour
         Debug.Log("Try: " + path);
         return path;
     }
-    public void PlayAudio(string loopName, LoopType loopType = LoopType.None, float volume = 1f)
+    public void PlayAudio(string loopName, LoopType loopType = LoopType.None, float volume = 1f, float pan = 0f)
     {
-        PlayAudio(loopName, "", loopType, volume);
+        PlayAudio(loopName, "", loopType, volume, pan);
     }
-    public void PlayAudio(string loopName, string branchName,  LoopType loopType = LoopType.None, float volume = 1f)
+    public void PlayAudio(string loopName, string branchName,  LoopType loopType = LoopType.None, float volume = 1f, float pan = 0f)
 	{
         AudioClip ac = null;
         string path;
@@ -85,10 +86,10 @@ public class AudioSystem : MonoBehaviour
                 ac = null;
                 break;
         }
-        InstantiateAudio(ac, volume);
+        InstantiateAudio(ac, volume, pan);
 	}
 
-    public void InstantiateAudio(AudioClip ac, float volume = 1f)
+    public void InstantiateAudio(AudioClip ac, float volume = 1f, float pan = 0f)
 	{
         if (!ac)
             return;
@@ -101,6 +102,7 @@ public class AudioSystem : MonoBehaviour
         audioSource.clip = ac;
         audioSource.Play();
         audioSource.volume = volume;
+        audioSource.panStereo = pan;
         Destroy(obj, ac.length);
 	}
 
@@ -168,6 +170,19 @@ public class AudioSystem : MonoBehaviour
         StartCoroutine(TensionCoroutine());
         StartCoroutine(ThemeCoroutine());
     }
+
+    public void FadeAllPianos()
+	{
+        AudioSource[] pianos = FindObjectsOfType<AudioSource>();
+        foreach(var i in pianos)
+		{
+            if (i.gameObject.name.Contains("piano"))
+            {
+                i.DOFade(0f, 1.5f);
+                Destroy(i.gameObject, 1.5f);
+            }
+		}
+	}
 
     // Update is called once per frame
     void Update()
