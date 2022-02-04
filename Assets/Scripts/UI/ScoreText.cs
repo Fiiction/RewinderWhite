@@ -27,12 +27,12 @@ public class ScoreText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(type == Type.Score)
-            text.text = GS.score.ToString("0.");
-        if (type == Type.Time)
-            text.text = GS.gameTime.ToString("0.");
         if (statesAvaliable.Contains(GS.state))
         {
+            if (type == Type.Score)
+                text.text = GS.score.ToString("0.");
+            if (type == Type.Time)
+                text.text = GS.gameTime.ToString("0.");
             if (alpha < 1F)
             {
                 alpha += Time.deltaTime / GS.stateChangeTime;

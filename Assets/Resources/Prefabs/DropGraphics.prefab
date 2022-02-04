@@ -264,6 +264,7 @@ MonoBehaviour:
   lineWidth: 1
   lineLength: 1
   _basicColor: {r: 0, g: 0, b: 0, a: 0}
+  fadeSpeed: 1
 --- !u!1 &7938152511816704187
 GameObject:
   m_ObjectHideFlags: 0
@@ -338,7 +339,7 @@ TrailRenderer:
   m_Time: 0.15
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.64
+    widthMultiplier: 0.63
     widthCurve:
       serializedVersion: 2
       m_Curve:

@@ -40,12 +40,19 @@ public class UIButton : MonoBehaviour
     {
         if (GS.state == curState)
         {
-            if (alpha < 1F)
+            float targetAlpha = 1f;
+            if (toState == GameSystem.State.HardLevel && !GS.GetHardUnlocked())
+                targetAlpha = 0.35f;
+            if (toState == GameSystem.State.Memory && !GS.GetMemoryUnlocked())
+                targetAlpha = 0.35f;
+            if (alpha < 1f)
             {
                 alpha += Time.deltaTime / GS.stateChangeTime;
-                im.color = new Color(1, 1, 1, alpha);
+                if (alpha > 1f)
+                    alpha = 1f;
+                im.color = new Color(1, 1, 1, alpha * targetAlpha);
             }
-            if(alpha > 0.6f)
+            if(alpha * targetAlpha > 0.6f)
                 im.raycastTarget = true;
             if(isReturn && Input.GetKeyDown(KeyCode.Escape))
             {
@@ -58,10 +65,15 @@ public class UIButton : MonoBehaviour
         }
         else
         {
+            float targetAlpha = 1f;
+            if (toState == GameSystem.State.HardLevel && !GS.GetHardUnlocked())
+                targetAlpha = 0.4f;
+            if (toState == GameSystem.State.Memory && !GS.GetMemoryUnlocked())
+                targetAlpha = 0.4f;
             if (alpha > 0F)
             {
                 alpha -= Time.deltaTime / GS.stateChangeTime;
-                im.color = new Color(1, 1, 1, alpha);
+                im.color = new Color(1, 1, 1, alpha * targetAlpha);
             }
             im.raycastTarget = false;
         }

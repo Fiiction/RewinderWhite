@@ -46,9 +46,9 @@ public class Player : MonoBehaviour
             return;
         alive = false;
         CurrentDrop.GetComponent<DropGraphics>().Fade();
-        if(GS.state == GameSystem.State.EasyLevel || GS.state == GameSystem.State.HardLevel || 
+        if (GS.state == GameSystem.State.EasyLevel || GS.state == GameSystem.State.HardLevel ||
             GS.state == GameSystem.State.MemoryLevel)
-            GS.SetState(GameSystem.State.Ending);
+            GS.PlayerDie();
         Destroy(gameObject);
     }
     IEnumerator RewindEffectCoroutine()
@@ -125,6 +125,8 @@ public class Player : MonoBehaviour
         FindObjectOfType<BackgroundSystem>().AddEffect(be);
     }
     void Move()
+
+
     {
         if (!alive)
             return;

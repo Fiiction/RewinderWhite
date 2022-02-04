@@ -21,7 +21,7 @@ public class MemoryLevelButtonEffect : MonoBehaviour, IPointerDownHandler, IPoin
         float fade;
         float strength,x;
         float phase = 0F;
-        yield return new WaitForSeconds(index * 0.35F);
+        yield return new WaitForSeconds(index * 0.25F);
 
         while (GS.state == GameSystem.State.Memory)
         {
@@ -151,7 +151,7 @@ public class MemoryLevelButtonEffect : MonoBehaviour, IPointerDownHandler, IPoin
     // Update is called once per frame
     void Update()
     {
-        if (GS.state == GameSystem.State.Memory && !working)
+        if (GS.state == GameSystem.State.Memory && !working && GS.GetMemoryFastestFinish(index) < 9999f)
             StartCoroutine(GenerateRingCoroutine());
         CheckTouch();
     }

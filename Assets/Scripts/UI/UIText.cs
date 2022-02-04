@@ -9,6 +9,9 @@ public class UIText : MonoBehaviour
     GameSystem GS;
     Image im;
     float alpha = 0;
+    public bool isNewRecord = false;
+    public bool isHardUnlocking = false;
+    public bool isMemoryUnlocking = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +25,15 @@ public class UIText : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GS.state == curState)
+        bool flag = GS.state == curState;
+        if (isNewRecord && (!GS.newRecord))
+            flag = false;
+        if(isHardUnlocking && !GS.hardUnlocking)
+            flag = false;
+        if (isMemoryUnlocking && !GS.memoryUnlocking)
+            flag = false;
+
+        if (flag)
         {
             if (alpha < 1F)
             {

@@ -8,14 +8,18 @@ public class BlueFakeBlock : MonoBehaviour
     float phase = 0;
     float maxAlpha = 0.5F, posRate = 0F,scale = 1F;
     SpriteRenderer sr;
-    Color c;
+    Color c = StandardColors.COLORBLUE;
     Vector3 basicPos;
 
+    public void SetColor(Color _c)
+	{
+        c = _c;
+	}
     // Start is called before the first frame update
     void Start()
     {
         sr = GetComponent<SpriteRenderer>();
-        c = StandardColors.Adjust(StandardColors.COLORBLUE);
+        c = StandardColors.Adjust(c);
         c.a = 0F;
         sr.color = c;
         basicPos = transform.position;

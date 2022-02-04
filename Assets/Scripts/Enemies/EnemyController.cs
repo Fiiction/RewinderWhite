@@ -1,6 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+
+public class KillingEvent : UnityEvent<EnemyController>
+{
+}
 
 public class EnemyController : MonoBehaviour
 {
@@ -13,7 +18,9 @@ public class EnemyController : MonoBehaviour
     GameObject CurrentDrop, HollowDrop;
     DropGraphics dg, hdg;
     GameSystem GS;
-
+    public bool killed = false;
+    public UnityEvent OnKilled = new UnityEvent();
+    public KillingEvent OnKillingOther = new KillingEvent();
     [Header("Drop")]
     public Color color;
     public float _tailLength = 1.0F;
@@ -48,6 +55,7 @@ public class EnemyController : MonoBehaviour
     public Vector2 lastFramePos,vec;
     public void Kill(bool scoring = true)
     {
+        OnKilled.Invoke();
         CurrentDrop.transform.SetParent(null);
         CurrentDrop.GetComponent<DropGraphics>().Fade(vec);
         if(isBossPart)
@@ -61,9 +69,7 @@ public class EnemyController : MonoBehaviour
         if(scoring)
             FindObjectOfType<GameSystem>().AddScore(scoreRate);
 
-        if(GS.state == GameSystem.State.MemoryLevel)
-            PlayKillAudio();
-
+        killed = true;
         Destroy(gameObject);
     }
 
@@ -112,15 +118,18 @@ public class EnemyController : MonoBehaviour
             FindObjectOfType<BackgroundSystem>().AddEffect(be);
         }
     }
-    void PlayKillAudio()
+    public bool PlayKillAudio()
     {
         if (killAudioName != "")
         {
+            Debug.Log("KillPlay: " + killAudioName);
             if (isKillAudioMainLoop)
                 FindObjectOfType<AudioSystem>().PlayMainLoop(killAudioName);
             else
                 FindObjectOfType<AudioSystem>().PlayAudio(killAudioName, AudioSystem.LoopType.Random);
+            return true;
         }
+        return false;
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -142,7 +151,9 @@ public class EnemyController : MonoBehaviour
             if (c.strength < strength || (c.strength == strength && killEqual))
             {
                 c.Kill();
-                PlayKillAudio();
+                OnKillingOther.Invoke(c);
+                if (!PlayKillAudio())
+                    c.PlayKillAudio();
             }
         }
     }
@@ -157,7 +168,7 @@ public class EnemyController : MonoBehaviour
         DripColor();
         if (!GS.Gaming())
             Kill();
-        if(isBossPart)
+        if(isBossPart && !killed)
         {
             float r = (1 - GS.bossHealth / GS.maxBossHealth)*0.9F;
             hollowRate += (r - hollowRate) * 2F * Time.deltaTime;

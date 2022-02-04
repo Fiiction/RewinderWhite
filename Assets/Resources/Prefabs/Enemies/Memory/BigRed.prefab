@@ -89,6 +89,11 @@ MonoBehaviour:
   scoreRate: 0
   player: {fileID: 0}
   timeAlive: 0
+  minKillTime: 0.5
+  killed: 0
+  OnKilled:
+    m_PersistentCalls:
+      m_Calls: []
   color: {r: 1, g: 0.27058828, b: 0.27058828, a: 1}
   _tailLength: 1
   lineWidth: 1
@@ -116,11 +121,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 621beccb7490203439eceb57e501da8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 1
+  state: 0
   revolving: 0
   basicSpeed: 5
   speed: 5
   angSpeed: 1.4
+  orangeSpeed: 4.4
+  redSpeed: 6.5
   moveVec: {x: 1, y: 0}
   Orange: {fileID: 0}
   Red: {fileID: 0}
@@ -140,8 +147,8 @@ MonoBehaviour:
   redCnt: 0
   power: -1
   growthPower: -1
-  orangeColor: {r: 0.40952376, g: 0.20476192, b: 0.5, a: 1}
-  redColor: {r: 1, g: 0.27058825, b: 0.27058825, a: 1}
+  orangeColor: {r: 0.43137258, g: 0.35686275, b: 0.5176471, a: 1}
+  redColor: {r: 1, g: 0.64705884, b: 0.24705884, a: 1}
   startWhenDamaged: 1
   startingGenerate: 1
   generateRed: 1

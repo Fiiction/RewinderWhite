@@ -88,7 +88,12 @@ MonoBehaviour:
   scoreRate: 1
   player: {fileID: 0}
   timeAlive: 0
-  color: {r: 0, g: 0.6415094, b: 0.634741, a: 1}
+  minKillTime: 0.5
+  killed: 0
+  OnKilled:
+    m_PersistentCalls:
+      m_Calls: []
+  color: {r: 0, g: 0.7372549, b: 0.36078432, a: 1}
   _tailLength: 1
   lineWidth: 1
   lineLength: 0.8

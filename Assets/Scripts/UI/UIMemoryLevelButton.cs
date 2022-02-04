@@ -35,19 +35,26 @@ public class UIMemoryLevelButton : MonoBehaviour
     {
         if (GS.state == GameSystem.State.Memory)
         {
+            float targetAlpha = 1f;
+            if (!GS.MemoryLevelUnlocked(index))
+                targetAlpha = 0.35f;
             if (alpha < 1F)
             {
                 alpha += Time.deltaTime / GS.stateChangeTime;
-                im.color = new Color(1, 1, 1, alpha);
+                im.color = new Color(1, 1, 1, alpha * targetAlpha);
             }
-            im.raycastTarget = true;
+            if(alpha* targetAlpha > 0.6f)
+                im.raycastTarget = true;
         }
         else
         {
+            float targetAlpha = 1f;
+            if (!GS.MemoryLevelUnlocked(index))
+                targetAlpha = 0.35f;
             if (alpha > 0F)
             {
                 alpha -= Time.deltaTime / GS.stateChangeTime;
-                im.color = new Color(1, 1, 1, alpha);
+                im.color = new Color(1, 1, 1, alpha * targetAlpha);
             }
             im.raycastTarget = false;
         }

@@ -121,7 +121,7 @@ public class DropGraphics : MonoBehaviour
         if(tail)
         {
             tail.time = 0.18F * tailLength * scale;
-            tail.widthMultiplier = 0.6F * scale;
+            tail.widthMultiplier = 0.62F * scale;
         }
         if(line)
         {

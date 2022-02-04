@@ -69,24 +69,24 @@ public class BackgroundSystem : MonoBehaviour
 {
     static public Vector2 BlockCenterPos(Vector2Int i)
     {
-        return new Vector2(i.x - 19.5F, i.y - 9.5F);
+        return new Vector2(i.x - 21.5F, i.y - 9.5F);
     }
     static public Vector2Int BlockIndex(Vector2 p)
     {
-        int x = Mathf.FloorToInt(p.x + 20F), y = Mathf.FloorToInt(p.y + 10F);
+        int x = Mathf.FloorToInt(p.x + 22F), y = Mathf.FloorToInt(p.y + 10F);
         return new Vector2Int(x, y);
     }
     static public bool InBoundary(Vector2Int i)
     {
-        return (i.x >= 8 && i.x <= 31 && i.y >= 2 && i.y <= 17);
+        return (i.x >= 10 && i.x <= 33 && i.y >= 2 && i.y <= 17);
     }
     static public bool OnBoundary(Vector2Int i)
 	{
-        return (!InBoundary(i)) && i.x>= 7 && i.x <= 32 && i.y>=1 && i.y<=18;
+        return (!InBoundary(i)) && i.x>= 9 && i.x <= 34 && i.y>=1 && i.y<=18;
 	}
     static public bool InScreen(Vector2Int i)
     {
-        return (i.x >= 0 && i.x <= 39 && i.y >= 0 && i.y <= 19);
+        return (i.x >= 0 && i.x <= 43 && i.y >= 0 && i.y <= 19);
     }
     static Vector2[] EPS = { new Vector2(-0.33F, -0.33F), new Vector2(-0.33F, 0F), new Vector2(-0.33F, 0.33F),
                 new Vector2(0F, -0.33F), new Vector2(0F, 0F), new Vector2(0F, 0.33F),
@@ -110,7 +110,7 @@ public class BackgroundSystem : MonoBehaviour
 
     void Generate()
     {
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 44; i++)
             for (int j = 0; j < 20; j++)
             {
                 Vector2Int index = new Vector2Int(i, j);
@@ -162,7 +162,7 @@ public class BackgroundSystem : MonoBehaviour
     void CalcColor()
     {
         Vector2Int index;
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 44; i++)
             for (int j = 0; j < 20; j++)
             {
                 index = new Vector2Int(i, j);
@@ -204,7 +204,7 @@ public class BackgroundSystem : MonoBehaviour
                 case BgrEffect.Type.OuterRing:
                 case BgrEffect.Type.MemRing:
                 case BgrEffect.Type.CrossCircle:
-                    int minX = 2 + i.memIndex * 4;
+                    int minX = 4 + i.memIndex * 4;
                     if( i.type == BgrEffect.Type.Focus)
                     {
                         stre = i.strength * (i.phase) * (i.phase);
@@ -273,7 +273,7 @@ public class BackgroundSystem : MonoBehaviour
                     stre = i.strength * Mathf.Clamp01(2f * (1F - i.phase));
                     rad = 20f * Mathf.Pow(i.phase, 1.3F) + 0f;
                     halfWidth = rad * 0.5F + 4F;
-                    for (int x = 0; x < 40; x++)
+                    for (int x = 0; x < 44; x++)
                         for (int y = 0; y < 20; y++)
                         {
                             index = new Vector2Int(x, y);
@@ -293,7 +293,7 @@ public class BackgroundSystem : MonoBehaviour
                     break;
                 case BgrEffect.Type.CrossBomb:
                     Vector2Int baseIndex = BlockIndex(i.pos - new Vector2(0.5f, 0.5f));
-                    for (int x = 0; x < 40; x++)
+                    for (int x = 0; x < 44; x++)
                         for (int y = 0; y < 20; y++)
                         {
                             if ((x < baseIndex.x || x > baseIndex.x + 1) &&
@@ -324,7 +324,7 @@ public class BackgroundSystem : MonoBehaviour
 
         foreach (var i in DeleteList)
             Effect.Remove(i);
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 44; i++)
             for (int j = 0; j < 20; j++)
             {
                 index = new Vector2Int(i, j);

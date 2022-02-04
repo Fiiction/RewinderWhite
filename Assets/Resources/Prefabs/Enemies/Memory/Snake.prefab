@@ -65,8 +65,8 @@ MonoBehaviour:
   redCnt: 0
   power: 0.5
   growthPower: 0.3
-  orangeColor: {r: 0, g: 0.735849, b: 0.35895076, a: 1}
-  redColor: {r: 0.10484158, g: 0.4211137, b: 0.7169812, a: 1}
+  orangeColor: {r: 0, g: 0.6431373, b: 0.63529414, a: 1}
+  redColor: {r: 0.909804, g: 0.654902, b: 0.40000004, a: 1}
   startWhenDamaged: 1
   startingGenerate: 1
   generateRed: 1
